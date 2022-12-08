@@ -1,8 +1,6 @@
 import os.path
 from pathlib import Path
 
-from ckeditor.widgets import CKEditorWidget
-
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = 'django-insecure-l^o(8$edg3k5@xmwo@-89$11zfps!4=a-#87nm&i@ik%3@^eb+'
@@ -23,7 +21,7 @@ INSTALLED_APPS = [
     'ckeditor',
     'ckeditor_uploader',
     'fontawesomefree',
-    'widget_tweaks',
+    # 'widget_tweaks',
     # 'django_celery_results',
 ]
 
@@ -50,10 +48,10 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                'apps.context_processors.context_category',
-                'apps.context_processors.context_post',
-                'apps.context_processors.context_info',
-                'apps.context_processors.context_trending_post',
+                'apps.utils.context_processors.context_category',
+                'apps.utils.context_processors.context_post',
+                'apps.utils.context_processors.context_info',
+                'apps.utils.context_processors.context_trending_post',
             ],
         },
     },
@@ -62,6 +60,8 @@ TEMPLATES = [
 FORM_RENDERER = 'django.forms.renderers.TemplatesSetting'
 
 WSGI_APPLICATION = 'root.wsgi.application'
+
+AUTH_USER_MODEL = 'apps.User'
 
 DATABASES = {
     'default': {
@@ -104,6 +104,8 @@ MEDIA_URL = 'media/'
 MEDIA_ROOT = os.path.join(BASE_DIR / 'media/')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+LOGIN_URL = 'login'
 
 CKEDITOR_UPLOAD_PATH = 'posts/'
 CKEDITOR_CONFIGS = {
@@ -163,9 +165,6 @@ CKEDITOR_CONFIGS = {
 DJANGORESIZED_DEFAULT_KEEP_META = True
 DJANGORESIZED_DEFAULT_FORCE_FORMAT = 'JPEG'
 DJANGORESIZED_DEFAULT_FORMAT_EXTENSIONS = {'JPEG': ".jpg", 'PNG': '.png'}
-
-AUTH_USER_MODEL = 'apps.User'
-LOGIN_URL = 'login'
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
