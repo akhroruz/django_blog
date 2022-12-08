@@ -22,9 +22,7 @@ INSTALLED_APPS = [
     'apps',
     'ckeditor',
     'ckeditor_uploader',
-    'fontawesomefree',
-    'widget_tweaks',
-    # 'django_celery_results',
+    'fontawesomefree'
 ]
 
 MIDDLEWARE = [
@@ -173,6 +171,3 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'turginboyevahrorbek7@gmail.com'
 EMAIL_HOST_PASSWORD = 'akxwtnykqgstplwz'
-
-CELERY_RESULT_BACKEND = 'django-db'
-CELERY_CACHE_BACKEND = 'django-cache'

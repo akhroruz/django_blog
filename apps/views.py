@@ -1,19 +1,13 @@
-from django.contrib import messages
 from django.contrib.auth import login
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView
-from django.contrib.sites.shortcuts import get_current_site
 from django.db.models import F
-from django.http import HttpResponse
 from django.shortcuts import redirect, get_object_or_404
 from django.urls import reverse_lazy
-from django.utils.encoding import force_str
-from django.utils.http import urlsafe_base64_decode
 from django.views.generic import ListView, DetailView, FormView, TemplateView
 
 from apps.forms import CreateCommentForm, CustomLoginForm, CreatePostForm, RegisterForm
-from apps.models import Category, Post, Siteinfo, Comment, User
-from apps.token import account_activation_token
+from apps.models import Category, Post, Siteinfo, Comment
 
 
 class IndexView(ListView):
@@ -60,7 +54,7 @@ class ContactView(TemplateView):
 
 class DetailFormPostView(FormView, DetailView):
     template_name = 'apps/post.html'
-    queryset = Post.objects.filter(status='active')
+    queryset = Post.objects.all()
     context_object_name = 'post'
     form_class = CreateCommentForm
 
@@ -109,17 +103,6 @@ class RegisterView(FormView):
             login(self.request, user)
         return super().form_valid(form)
 
-        current_site = get_current_site(self.request)
-        send_to_gmail(
-            args=[form.data.get('email'), current_site.domain, 'register'],
-            countdown=5
-        )
-        messages.add_message(
-            self.request,
-            level=messages.WARNING,
-            message='Successfully send your email, Please activate your profile'
-        )
-
     def get(self, request, *args, **kwargs):
         if request.user.is_authenticated:
             return redirect('login')
@@ -127,32 +110,6 @@ class RegisterView(FormView):
 
     def form_invalid(self, form):
         return super().form_invalid(form)
-
-
-class ActivateEmailView(TemplateView):
-    template_name = 'apps/auth/confirm_mail.html'
-
-    def get(self, request, *args, **kwargs):
-        uid = kwargs.get('uid')
-        token = kwargs.get('token')
-
-        try:
-            uid = force_str(urlsafe_base64_decode(uid))
-            user = User.objects.get(pk=uid)
-        except Exception as e:
-            user = None
-        if user is not None and account_activation_token.check_token(user, token):
-            user.is_active = True
-            user.save()
-            login(request, user)
-            messages.add_message(
-                request=request,
-                level=messages.SUCCESS,
-                message="Your account successfully activated!"
-            )
-            return redirect('index')
-        else:
-            return HttpResponse('Activation link is invalid!')
 
 
 class CreatePostView(LoginRequiredMixin, FormView):
