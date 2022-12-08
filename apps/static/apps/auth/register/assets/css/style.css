@@ -1,0 +1,48 @@
+.navbar-light .navbar-brand {
+    color: red;
+}
+.container, .container-fluid, .container-xxl, .container-xl, .container-lg, .container-md, .container-sm {
+    padding-right: var(--falcon-gutter-x, 0.3rem);
+    padding-left: var(--falcon-gutter-x, 0.3rem);
+}
+body {
+    background-color: #315587;
+}
+a {
+    color: #ff0000;
+}
+.navbar-top {
+    margin-left: -5px;
+    margin-right: -5px;
+    min-height: 4.3125rem;
+    /* padding: 6px; */
+}
+.img-thumbnail {
+    padding: 0px;
+    border: 3px solid #f00;
+}
+.row>* {
+    padding-right: calc(var(--falcon-gutter-x) * 0.2);
+    padding-left: calc(var(--falcon-gutter-x) * 0.2);
+}
+.text-warning {
+    color: #ff0000 !important;
+}
+.btn-falcon-default, [data-list] .page {
+    color: #ffffff;
+    background-color: #f00;
+    border-color: #f00;
+}
+.theme-control-toggle .theme-control-toggle-label {
+    color: #ff0000;
+}
+.text-600 {
+    color: #ffffff !important;
+}
+.btn-primary, .navbar-vertical .btn-purchase, .tox .tox-menu__footer .tox-button:last-child, .tox .tox-dialog__footer .tox-button:last-child {
+    color: #fff;
+    background-color: #e52c2c;
+}
+ul.list-unstyled {
+    font-size: 14px;
+}

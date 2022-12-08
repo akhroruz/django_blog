@@ -1,0 +1,139 @@
+{% extends 'apps/parts/base.html' %}
+{% load static %}
+{#{% load header %}#}
+
+{% block body_content %}
+    <div class="no-pd" id="content">
+        <div class="container">
+            <div class="breadcrumb">
+                <ul>
+                    <li><a href="{% url 'index' %}"> <i class="fas fa-home"></i>Home</a></li>
+                    <li><a href="{% url 'category' %}">Blog</a></li>
+                    <li class="active">
+                        <a href="">{{ category.name }}</a>
+                    </li>
+                </ul>
+            </div>
+            <div class="category">
+                <div class="row">
+                    <div class="col-12 col-md-5 col-lg-4 order-md-2">
+                        <div class="blog-sidebar">
+                            <div class="blog-sidebar-section -category">
+                                <div class="center-line-title">
+                                    <h5>Categories</h5>
+                                </div>
+
+                                {% for category in custom_categories %}
+                                    <a class="category -bar " href="{% url 'category' %}?category={{ category.slug }}">
+                                        <div class="category__background"
+                                             style="background-image: url({{ category.image.url }})">
+                                        </div>
+                                        <h5 class="title">{{ category.name }}</h5>
+                                        <h5 class="quantity">{{ category.post_count }}</h5>
+                                    </a>
+                                {% endfor %}
+                            </div>
+                            <div class="blog-sidebar-section -trending-post">
+                                <div class="center-line-title">
+                                    <h5>Trending post</h5>
+                                </div>
+                                {% for post in trending_posts|slice:4 %}
+                                    <div class="trending-post">
+                                        <div class="trending-post_image">
+                                            <div class="rank">{{ forloop.counter }}</div>
+                                            <img src="{{ post.pic.url }}"
+                                                 alt="Web Accesibility For Beginers.."/>
+                                        </div>
+                                        <div class="trending-post_content">
+                                            <h5>{{ post.category.first.name }}</h5>
+                                            <a href="{% url 'category' %}?category={{ post.category.first.slug }}">{{ post.content|safe|striptags|truncatechars:100 }}</a>
+                                            <div class="info__time">
+                                                <i class="far fa-clock"></i>
+                                                <p>{{ post.created_at|date:'M d, Y' }}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                            <form class="subcribe-box subcribe-box" action="/" method="POST">
+                                <h5>Subcribe</h5>
+                                <p>Lorem ipsum dolor amet, consectetur adipiscing elit, sed tempor.</p>
+                                <input placeholder="Your email" name="email" type="email"/>
+                                <a class="btn -normal" href="#">Subcribe</a>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-7 col-lg-8 order-md-1">
+                        {% if category %}
+                            <div class="category__header">
+                                <div class="category__header__text">
+                                    <h5>Categories:</h5>
+                                    <a href="">{{ category.name }}</a>
+                                </div>
+                                <div class="category__header__filter">
+                                </div>
+                            </div>
+                        {% endif %}
+                        <div class="category_content">
+                            <div class="col-12">
+                                {% for post in posts %}
+                                    <div class="post-card -small -horizontal">
+                                        <a class="card__cover" href="{% url 'post_form_detail' post.slug %}"
+                                           tabindex="0">
+                                            <img src="{{ post.pic.url }}" alt="">
+                                        </a>
+                                        <div class="card__content">
+                                            {% if post.category.exists %}
+                                                <h5 class="card__content-category">{{ post.category.first.name }}</h5>
+                                            {% endif %}
+                                            <a class="card__content-title" href="{% url 'post_form_detail' post.slug %}"
+                                               tabindex="0">
+                                                {{ post.title }}
+                                            </a>
+                                            <div class="card__content-info">
+                                                <div class="info__time">
+                                                    <i class="far fa-clock"></i>
+                                                    <p>Clock {{ post.created_at|date:'D m, Y' }}</p>
+                                                </div>
+                                                <div class="info__comment">
+                                                    <i class="far fa-comment"></i>
+                                                    <p>{{ post.comment_count }}</p>
+                                                </div>
+                                            </div>
+                                            <p class="card__content-description">{{ post.content|safe|striptags|truncatechars:100 }}</p>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        <div class="pagination">
+
+                            {% if page_obj.has_other_pages %}
+                                <ul class="pagination">
+                                    {% if page_obj.has_previous %}
+                                        <li><a href="?page={{ page_obj.previous_page_number }}">&laquo;</a></li>
+                                    {% else %}
+                                        <li class="disabled"><span>&laquo;</span></li>
+                                    {% endif %}
+                                    {% for i in page_obj.paginator.page_range %}
+                                        {% if page_obj.number == i %}
+                                            <li class="active"><span>{{ i }} <span
+                                                    class="sr-only">(current)</span></span></li>
+                                        {% else %}
+                                            <li><a href="?page={{ i }}">{{ i }}</a></li>
+                                        {% endif %}
+                                    {% endfor %}
+                                    {% if page_obj.has_next %}
+                                        <li><a href="?page={{ page_obj.next_page_number }}">&raquo;</a></li>
+                                    {% else %}
+                                        <li class="disabled"><span>&raquo;</span></li>
+                                    {% endif %}
+                                </ul>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

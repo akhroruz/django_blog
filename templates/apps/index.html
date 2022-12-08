@@ -1,0 +1,138 @@
+{% extends 'apps/parts/base.html' %}
+{% load static %}
+
+{% block body_content %}
+    <div id="content">
+        <div class="container">
+            <div class="blog-with-sidebar">
+                <div class="row">
+                    <div class="col-12 col-md-5 col-lg-4 order-md-2">
+                        <div class="blog-sidebar">
+                            <div class="blog-sidebar-section -category">
+                                <div class="center-line-title">
+                                    <h5>Categories</h5>
+                                </div>
+                                {% for category in custom_categories %}
+                                    <a class="category -bar " href="{% url 'category' %}?category={{category.slug}}">
+                                        <div class="category__background" style="background-image: url({{ category.image.url }})">
+                                        </div>
+                                        <h5 class="title">{{ category.name }}</h5>
+                                        <h5 class="quantity">{{ category.post_count }}</h5>
+                                    </a>
+                                {% endfor %}
+
+                            </div>
+
+                            <div class="blog-sidebar-section -trending-post">
+                                <div class="center-line-title">
+                                    <h5>Trending post</h5>
+                                </div>
+                                {% for post in trending_posts %}
+
+                                    <div class="trending-post">
+                                        <div class="trending-post_image">
+                                            <div class="rank">{{ forloop.counter }}</div>
+                                            <img src="{{ post.pic.url }}"
+                                                 alt="{{ post.content|safe|striptags|truncatechars:50 }}"/>
+                                        </div>
+                                        <div class="trending-post_content">
+                                            <h5>{{ post.category.first.name }}</h5>
+                                            <a href="{% url 'post_form_detail' post.slug %}">{{ post.title }}</a>
+                                            <div class="info__time">
+                                                <i class="far fa-clock"></i>
+                                                <p>{{ post.created_at|date:"M d, Y" }}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+
+                            </div>
+                            <form class="subcribe-box subcribe-box" action="{% url 'index' %}" method="POST">
+                                <h5>Subcribe</h5>
+                                <p>Lorem ipsum dolor amet, consectetur adipiscing elit, sed tempor.</p>
+                                <input placeholder="Your email" name="email" type="email">
+                                <button type="submit" class="btn -normal">Subscribe</button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-md-7 col-lg-8 order-md-1">
+                        <div class="row">
+                            <div class="col-sm-6 col-md-12">
+                                <div class="post-card -full -center">
+                                    <a class="card__cover" href="{% url 'post_form_detail' posts.first.slug %}">
+                                        <img src="{{ posts.first.pic.url }}"
+                                             alt="{{ posts.first.content|safe|striptags|truncatechars:100 }}"/>
+                                    </a>
+                                    <div class="card__content">
+                                        <h5 class="card__content-category">{{ posts.first.category.first.name }}</h5>
+                                        <a class="card__content-title"
+                                           href="{% url 'post_form_detail' posts.first.slug %}">{{ posts.first.title }}</a>
+                                        <div class="card__content-info">
+                                            <div class="info__time info__author">
+                                                <i class="far fa-user"></i>
+                                                <p>{{ posts.first.author }}</p>
+                                            </div>
+                                            <div class="info__time">
+                                                <i class="far fa-clock"></i>
+                                                <p>Clock {{ posts.first.created_at|date:'D m, Y' }}</p>
+                                            </div>
+
+                                            <div class="info__comment">
+                                                <i class="far fa-comment"></i>
+                                                <p>{{ posts.first.comment_count }}</p>
+                                            </div>
+                                        </div>
+                                        <p class="card__content-description">{{ posts.first.content|safe|striptags|truncatechars:100 }}</p>
+                                        <a class="more-btn" href="{% url 'post_form_detail' posts.first.slug %}">Read more </a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="news-block__content -default">
+                                <div class="news-block__content__slide">
+                                    <div class="row">
+                                        <div class="col-12">
+                                            <div class="row">
+                                                {% for post in posts|slice:4 %}
+                                                    {% if forloop.counter > 1 %}
+                                                    <div class="col-12 col-sm-6">
+                                                        <div class="post-card -small">
+                                                            <a class="card__cover"
+                                                               href="{% url 'post_form_detail' post.slug %}">
+                                                                <img src="{{ post.pic.url }}" alt="{{ posts.first.content|safe|striptags|truncatechars:100 }}"/>
+                                                            </a>
+                                                            <div class="card__content">
+                                                                <h5 class="card__content-category">
+                                                                    {{ post.category.first.name }}
+                                                                </h5>
+                                                                <a class="card__content-title"
+                                                                   href="{% url 'post_form_detail' post.slug %}">
+                                                                    {{ post.title }}
+                                                                </a>
+                                                                <div class="card__content-info">
+                                                                    <div class="info__time">
+                                                                        <i class="far fa-clock"></i>
+                                                                        <p>Clock {{ post.created_at|date:'D d, Y' }}</p>
+                                                                    </div>
+                                                                    <div class="info__comment">
+                                                                        <i class="far fa-comment"></i>
+                                                                        <p>{{ post.comment_count }}</p>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

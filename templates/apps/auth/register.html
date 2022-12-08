@@ -1,0 +1,79 @@
+{% extends 'apps/auth/base_auth.html' %}
+{% load static %}
+
+{% block title %}
+    register
+{% endblock %}
+
+{% block main_content %}
+    <div class="card-body p-4 p-sm-5">
+        <div class="row flex-between-center mb-2" style="color: red">
+            <div class="row flex-between-center mb-2">
+                <div class="col-auto">
+                    <h5>Register</h5>
+                </div>
+                <div class="col-auto fs--1 text-600">
+                    <span class="mb-0 undefined">Have an account?</span>
+                    <span>
+                        <a href="{% url 'login' %}">Login</a>
+                    </span>
+                </div>
+            </div>
+            <form method="post" action="{% url 'register' %}" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <input class="form-control" name="username" type="text" autocomplete="on" placeholder="Username"/>
+                </div>
+                <div class="mb-3">
+                    <input class="form-control" name="email" type="email" autocomplete="on"
+                           placeholder="Email address"/>
+                </div>
+                <div class="mb-3">
+                    <input class="form-control" name="phone" type="tel" autocomplete="on" placeholder="Phone number"/>
+                </div>
+                <div class="mb-3">
+                    <input class="form-control" name="bio" type="text" autocomplete="on" placeholder="Bio"/>
+                </div>
+
+                <div class="mb-3">
+                    <input class="form-control" name="image" type="file" autocomplete="on" accept="image/*"/>
+                </div>
+                <div class="row gx-2">
+                    <div class="mb-3 col-sm-6">
+                        <input class="form-control" name="password" type="password" autocomplete="on"
+                               placeholder="Password"/>
+                    </div>
+                    <div class="mb-3 col-sm-6">
+                        <input class="form-control" name="confirm_password" type="password" autocomplete="on"
+                               placeholder="Confirm Password"/>
+                    </div>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="basic-register-checkbox"/>
+                    <label class="form-label" for="basic-register-checkbox">Remember me</label>
+                </div>
+                <div class="mb-3">
+                    <button class="btn btn-primary d-block w-100 mt-3" type="submit">Register</button>
+                </div>
+            </form>
+            <div class="position-relative mt-4">
+                <hr class="bg-300"/>
+                <div class="divider-content-center">or register with</div>
+            </div>
+            <div class="row g-2 mt-2">
+                <div class="col-sm-6">
+                    <a class="btn btn-outline-google-plus btn-sm d-block w-100" href="#">
+                        <span class="fab fa-google-plus-g me-2" data-fa-transform="grow-8"></span>
+                        google
+                    </a>
+                </div>
+                <div class="col-sm-6">
+                    <a class="btn btn-outline-facebook btn-sm d-block w-100" href="#">
+                        <span class="fab fa-facebook-square me-2" data-fa-transform="grow-8"></span>
+                        facebook
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

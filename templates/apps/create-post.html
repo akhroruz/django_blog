@@ -1,0 +1,34 @@
+{% extends 'apps/parts/base.html' %}
+{% load static %}
+
+{% block body_content %}
+    <div class="no-pd" id="content">
+        <div class="container">
+            <div class="breadcrumb">
+                <ul>
+                    <li><a href="{% url 'index' %}"><i class="fas fa-home"></i>Home</a></li>
+                    <li class="active"><a href="{% url 'create-post' %}">Create Post</a></li>
+                </ul>
+            </div>
+            <div class="create-post">
+                <div class="row">
+                    <div class="col-24 col-md-12">
+                        <div class="create-post__form">
+                            <h2 class="contact-title">Create post</h2>
+                            <form action="{% url 'create-post' %}" method="post" enctype="multipart/form-data">
+                                {% csrf_token %}
+                                <div class="form-outline">
+                                    {{ form.as_p }}
+                                    <br>
+                                </div>
+                                <button type="submit" class="btn -normal">Create post</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+  
