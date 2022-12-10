@@ -3,7 +3,7 @@ from django.contrib.auth.models import AbstractUser
 from django.contrib.postgres.fields import ArrayField
 from django.core.validators import RegexValidator
 from django.db.models import Model, CharField, ImageField, SlugField, ForeignKey, CASCADE, DateTimeField, \
-    ManyToManyField, SET_NULL, TextField, EmailField, TextChoices, BooleanField, IntegerField
+    ManyToManyField, SET_NULL, TextField, EmailField, TextChoices, BooleanField, IntegerField, PROTECT
 from django.utils.html import format_html
 from django.utils.text import slugify
 from django_resized import ResizedImageField
@@ -141,3 +141,8 @@ class Comment(Model):
     class Meta:
         verbose_name = 'Izoh'
         verbose_name_plural = 'Izohlar'
+
+
+class PostView(Model):
+    post = ForeignKey(Post, CASCADE)
+    created_at = DateTimeField(auto_now=True)

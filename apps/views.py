@@ -11,9 +11,10 @@ from django.utils.encoding import force_str
 from django.utils.http import urlsafe_base64_decode
 from django.views.generic import ListView, DetailView, FormView, TemplateView
 
-from apps.forms import CreateCommentForm, CustomLoginForm, CreatePostForm, RegisterForm
-from apps.models import Category, Post, Siteinfo, Comment, User
-from apps.token import account_activation_token
+from apps.forms import CreateCommentForm, CustomLoginForm, CreatePostForm, RegisterForm, ForgotPasswordForm
+from apps.models import Category, Post, Siteinfo, Comment, PostView, User
+from apps.utils.tasks import send_to_gmail
+from apps.utils.token import account_activation_token
 
 
 class IndexView(ListView):
@@ -60,18 +61,20 @@ class ContactView(TemplateView):
 
 class DetailFormPostView(FormView, DetailView):
     template_name = 'apps/post.html'
-    queryset = Post.objects.filter(status='active')
+    queryset = Post.objects.all()
     context_object_name = 'post'
     form_class = CreateCommentForm
+
+    def get_queryset(self):
+        # Post.objects.filter(slug=self.kwargs.get('slug')).update(view=F('view') + 1)
+        PostView.objects.create(post_id=Post.objects.filter(slug=self.kwargs.get('slug')).first().pk)
+        return super().get_queryset()
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['comments'] = Comment.objects.filter(post__slug=self.kwargs.get('slug'))
+        context['views'] = PostView.objects.filter(post__slug=self.kwargs.get('slug')).count()
         return context
-
-    def get_queryset(self):
-        Post.objects.filter(slug=self.kwargs.get('slug')).update(view=F('view') + 1)
-        return super().get_queryset()
 
     def post(self, request, *args, **kwargs):
         slug = kwargs.get('slug')
@@ -103,22 +106,24 @@ class RegisterView(FormView):
     redirect_authenticated_user = True
     success_url = reverse_lazy('login')
 
+    # def form_valid(self, form):
+    #     user = form.save()
+    #     if user is not None:
+    #         login(self.request, user)
+    #     return super().form_valid(form)
     def form_valid(self, form):
         user = form.save()
         if user is not None:
             login(self.request, user)
-        return super().form_valid(form)
-
         current_site = get_current_site(self.request)
-        send_to_gmail(
-            args=[form.data.get('email'), current_site.domain, 'register'],
-            countdown=5
-        )
+        send_to_gmail(form.data.get('email'), current_site.domain, 'register')
         messages.add_message(
             self.request,
             level=messages.WARNING,
             message='Successfully send your email, Please activate your profile'
         )
+
+        return super().form_valid(form)
 
     def get(self, request, *args, **kwargs):
         if request.user.is_authenticated:
@@ -127,6 +132,17 @@ class RegisterView(FormView):
 
     def form_invalid(self, form):
         return super().form_invalid(form)
+
+
+class ForgotPasswordPage(FormView):
+    form_class = ForgotPasswordForm
+    success_url = reverse_lazy('login')
+    template_name = 'apps/auth/forgot_password.html'
+
+    def form_valid(self, form):
+        current_site = get_current_site(self.request)
+        send_to_gmail(form.data.get('email'), current_site.domain, 'forgot')
+        return super().form_valid(form)
 
 
 class ActivateEmailView(TemplateView):

@@ -1,4 +1,6 @@
-from apps.models import Category, Post, Siteinfo
+from django.db.models import Count
+
+from apps.models import Category, Post, Siteinfo, PostView
 
 
 def context_category(request):
@@ -21,5 +23,6 @@ def context_info(request):
 
 def context_trending_post(request):
     return {
-        'trending_posts': Post.objects.filter(status='active')[:4]
+        # 'trending_posts': Post.objects.filter(status='active')[:4]
+        # 'trending_posts': PostView
     }

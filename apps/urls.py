@@ -2,11 +2,13 @@ from django.contrib.auth.views import LogoutView
 from django.urls import path
 
 from apps.views import IndexView, AboutView, ContactView, PostListView, CustomLoginView, RegisterView, \
-    DetailFormPostView, CreatePostView
+    DetailFormPostView, CreatePostView, ForgotPasswordPage
 
 urlpatterns = [
     path('login', CustomLoginView.as_view(), name='login'),
     path('register/', RegisterView.as_view(), name='register'),
+    path('forgot-password/', ForgotPasswordPage.as_view(), name='forgot'),
+
     path('about', AboutView.as_view(), name='about'),
     path('logout', LogoutView.as_view(next_page='index'), name='logout'),
     path('contact', ContactView.as_view(), name='contact'),
