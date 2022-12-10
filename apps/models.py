@@ -3,7 +3,7 @@ from django.contrib.auth.models import AbstractUser
 from django.contrib.postgres.fields import ArrayField
 from django.core.validators import RegexValidator
 from django.db.models import Model, CharField, ImageField, SlugField, ForeignKey, CASCADE, DateTimeField, \
-    ManyToManyField, SET_NULL, TextField, EmailField, TextChoices, BooleanField, IntegerField, PROTECT
+    ManyToManyField, SET_NULL, TextField, EmailField, TextChoices, BooleanField, IntegerField, PROTECT, Manager
 from django.utils.html import format_html
 from django.utils.text import slugify
 from django_resized import ResizedImageField
@@ -77,12 +77,19 @@ class Category(Model):
         return self.name
 
 
+class ActivePostManager(Manager):
+    def get_queryset(self):
+        return super().get_queryset().filter(status=Post.Status.ACTIVE)
+
+    # def trend_posts(self):
+        # return self.get_queryset().order_by('-created_at')
+
+
 class Post(Model):
     class Status(TextChoices):
         PENDING = 'pending', 'Kutilmoqda'
         ACTIVE = 'active', 'Faol'
         CANCEL = 'cancel', 'Rad etilgan'
-
     title = CharField(max_length=255)
     slug = SlugField(max_length=255, unique=True)
     content = RichTextUploadingField()
@@ -91,7 +98,10 @@ class Post(Model):
     pic = ResizedImageField(upload_to='posts/')
     view = IntegerField(default=0)
     category = ManyToManyField(Category)
-    created_at = DateTimeField(auto_now=True)
+    updated_at = DateTimeField(auto_now=True)
+    created_at = DateTimeField(auto_now_add=True)
+    active = ActivePostManager()
+    objects = Manager()
 
     def save(self, *args, **kwargs):
         if not self.slug:
@@ -127,6 +137,7 @@ class Post(Model):
 
     class Meta:
         verbose_name_plural = 'Postlar'
+        verbose_name = 'Post'
 
 
 class Comment(Model):

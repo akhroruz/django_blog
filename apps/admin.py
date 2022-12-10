@@ -33,6 +33,14 @@ class PostAdmin(ModelAdmin):
             return HttpResponseRedirect('../')
         elif '_preview' in post:
             return redirect('post_form_detail', slug=obj.slug)
+        elif "_make-unique" in request.POST:
+            # matching_names_except_this = self.get_queryset(request).filter(name=obj.name).exclude(pk=obj.id)
+            # matching_names_except_this.delete()
+            # obj.is_unique = True
+            # obj.save()
+            self.message_user(request, "This villain is now unique")
+            return HttpResponseRedirect(".")
+
         return super().response_change(request, obj)
 
     def get_urls(self):

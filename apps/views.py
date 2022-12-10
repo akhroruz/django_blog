@@ -13,8 +13,24 @@ from django.views.generic import ListView, DetailView, FormView, TemplateView
 
 from apps.forms import CreateCommentForm, CustomLoginForm, CreatePostForm, RegisterForm, ForgotPasswordForm
 from apps.models import Category, Post, Siteinfo, Comment, PostView, User
+from apps.utils.make_pdf import render_to_pdf
 from apps.utils.tasks import send_to_gmail
 from apps.utils.token import account_activation_token
+
+from django.http import HttpResponse
+from django.views.generic import View
+from datetime import datetime
+
+
+class GeneratePdf(View):
+    def get(self, request, *args, **kwargs):
+        post = Post.objects.get(pk=41)
+        data = {
+            'post': post,
+        }
+        # v1
+        pdf = render_to_pdf('make_pdf.html', data)
+        return HttpResponse(pdf, content_type='application/pdf')
 
 
 class IndexView(ListView):
@@ -35,6 +51,9 @@ class PostListView(ListView):
     context_object_name = 'posts'
 
     def get_context_data(self, *, object_list=None, **kwargs):
+        #
+        # Post.objects.filter(status='active').order_by('-created_at')
+        # Post.active.order_by('-created_at')
         context = super().get_context_data(object_list=object_list, **kwargs)
         slug = self.request.GET.get('category')
         qs = self.get_queryset()
