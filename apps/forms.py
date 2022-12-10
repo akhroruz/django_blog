@@ -1,7 +1,8 @@
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.hashers import make_password
 from django.core.exceptions import ValidationError
-from django.forms import ModelForm, CharField, PasswordInput, ModelMultipleChoiceField, CheckboxSelectMultiple
+from django.forms import ModelForm, CharField, PasswordInput, ModelMultipleChoiceField, CheckboxSelectMultiple, Form, \
+    EmailField
 
 from apps.models import Comment, User, Post, Category
 
@@ -47,3 +48,13 @@ class CreatePostForm(ModelForm):
     class Meta:
         model = Post
         fields = ('title', 'content', 'pic', 'category')
+
+
+class ForgotPasswordForm(Form):
+    email = EmailField()
+
+    def clean_email(self):
+        email = self.cleaned_data.get('email')
+        if not User.objects.filter(email=email).exists():
+            raise ValidationError('This profile is not registered')
+        return email
