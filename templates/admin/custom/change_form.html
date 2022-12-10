@@ -1,0 +1,17 @@
+{% extends 'admin/change_form.html' %}
+
+{% block after_related_objects %}
+    {{ block.super }}
+    <input type="submit" value="Active" name="_active">
+    <input type="submit" value="Cancel" name="_cancel">
+    <input type="submit" value="Preview" name="_preview">
+{% endblock %}
+
+
+{% block submit_buttons_bottom %}
+    {{ block.super }}
+{#    <p class="deletelink-box" style="margin-right: 20px">#}
+{#        <input type="submit" style="background-color: #96be5b;" value="active" name="status">#}
+{#    </p>#}
+{#    <input type="submit" value="View Post" name="view">#}
+{% endblock %}

@@ -1,0 +1,71 @@
+{% load static %}
+{% load header %}
+
+<header class="theme-default">
+    <div id="search-box">
+        <div class="container">
+            <form action="/" method="POST">
+                <input type="text" placeholder="Searching for news" name="search"/>
+                <button><i class="fas fa-arrow-right"></i></button>
+            </form>
+        </div>
+    </div>
+    <div class="container">
+        <div class="header-wrapper">
+            <a class="header__logo" href="{% url 'index' %}">
+                <img src="{% static 'apps/assets/images/logo1.png' %}" alt="Logo"/></a>
+            <nav>
+                <ul>
+                    <li class="nav-item {% if request.path|is_active:'/' %}active{% endif %}">
+                        <a href="{% url 'index' %}">Home</a>
+                    </li>
+                    <li class="nav-item {% if request.path|is_active:'/blog-category' %}active{% endif %}">
+                        <a href="{% url 'category' %}">Blog</a>
+                    </li>
+                    <li class="nav-item {% if request.path|is_active:'/about' %}active{% endif %}">
+                        <a href="{% url 'about' %}">About</a>
+                    </li>
+                    <li class="nav-item {% if request.path|is_active:'/contact' %}active{% endif %}">
+                        <a href="{% url 'contact' %}">Contact</a>
+                    </li>
+                </ul>
+            </nav>
+
+            <div class="header__icon-group">
+                <div class="header__icon-group">
+                    <a href="#" id="search">
+                        <i class="fas fa-search"></i>
+                    </a>
+                </div>
+                <div class="social">
+                    <a href="#">
+                        <i class="fab fa-facebook-f"></i>
+                    </a>
+                    <a href="#">
+                        <i class="fab fa-twitter"></i>
+                    </a>
+                    <a href="#">
+                        <i class="fab fa-instagram"></i>
+                    </a>
+                    <a href="#">
+                        <i class="fab fa-dribbble"></i>
+                    </a>
+                    <a href="#">
+                        <i class="fab fa-"></i>
+                    </a>
+                    <a id="mobile-menu-controller" href="#">
+                        <i class="fas fa-bars"></i>
+                    </a>
+                </div>
+            </div>
+            {% if user.is_anonymous %}
+                <a class="btn btn-outline-primary" href="{% url 'register' %}">Sign up</a>
+                <a class="btn btn-outline-primary" href="{% url 'login' %}">Log in</a>
+            {% else %}
+                <a href="{% url 'create-post' %}" class="btn btn-outline-primary"><i style="font-size:12px" class="fa">&#xf067;
+                    Create post</i></a>
+                <a class="btn btn-outline-primary" href="{% url 'logout' %}">Log out</a>
+            {% endif %}
+        </div>
+    </div>
+</header>

@@ -27,6 +27,11 @@ class Siteinfo(Model):
 
 
 class User(AbstractUser):
+    # class Type(TextChoices):
+    #     ADMIN = 'admin', 'Bu admin'
+    #     CLIENT = 'client', 'Bu client'
+    # type = CharField(max_length=25, choices=Type.choices, default=Type.CLIENT)
+    #
     phone_regex = RegexValidator(regex=r'^\+?1?\d{9,15}$')
     phone = CharField(validators=[phone_regex], max_length=13, blank=True)
     bio = TextField(null=True, blank=True)

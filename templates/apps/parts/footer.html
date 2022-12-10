@@ -1,0 +1,93 @@
+{% load static %}
+<footer>
+    <div>
+        <div class="container">
+            <div class="footer-content">
+                <div class="row">
+                    <div class="col-12 col-md-6 col-lg-4">
+                        <div class="footer-col -about">
+                            <div class="center-line-title">
+                                <h5>About us</h5>
+                            </div>
+                            <p>{{ custom_info.about }}</p>
+                            <div class="contact-method">
+                                <p>
+                                    <i class="fas fa-map-marker-alt"></i>
+                                    {{ custom_info.location }}
+                                </p>
+                                <p>
+                                    <i class="far fa-mobile-android"></i>
+                                    {{ custom_info.phone }}
+                                </p>
+                                <p>
+                                    <i class="far fa-envelope-open"></i>
+                                    {{ custom_info.email }}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6 col-lg-4">
+                        <div class="footer-col -feature-post">
+                            <div class="center-line-title">
+                                <h5>Feature posts</h5>
+                            </div>
+                            <div class="feature-post-block">
+                                {% for post in custom_posts|slice:3 %}
+                                    <div class="post-card -tiny">
+                                        <a class="card__cover" href="{% url 'post_form_detail' post.slug %}">
+                                            <img src="{{ post.pic.url }}" alt="Best Open Source Tools For Developers"/>
+                                        </a>
+                                        <div class="card__content">
+                                            <h5 class="card__content-category">{{ post.category.name }}</h5>
+                                            <a class="card__content-title"
+                                               href="{% url 'post_form_detail' post.slug %}">{{ post.title }}</a>
+                                            <div class="card__content-info">
+                                                <div class="info__time">
+                                                    <i class="far fa-clock"></i>
+                                                    <p>Clock {{ post.created_at|date:'D m, Y' }}</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-12 col-lg-4">
+                        <div class="footer-col -util">
+                            <div class="row">
+
+                                <div class="col-12 col-md-6 col-lg-12">
+                                    <div class="center-line-title">
+                                        <h5>Blog Tags</h5>
+                                    </div>
+                                    <div class="tags-group">
+                                        {% for category in custom_categories %}
+                                            <a class="tag-btn"
+                                               href="{% url 'category' %}?category={{ category.slug }}">{{ category.name }}</a>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                                <!-- Social Media -->
+                                <div class="col-12 col-md-6 col-lg-12">
+                                    <div class="center-line-title">
+                                        <h5>Follow us</h5>
+                                    </div>
+                                    <div class="social-block">
+                                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                                        <a href="#"><i class="fab fa-twitter"></i></a>
+                                        <a href="#"><i class="fab fa-instagram"></i></a>
+                                        <a href="#"><i class="fab fa-dribbble"></i></a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="copyright">
+                <p>© 2022, Fuse - All rights reserved.</p>
+            </div>
+        </div>
+    </div>
+</footer>

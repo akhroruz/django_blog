@@ -104,7 +104,6 @@ eggs/
 .eggs/
 lib/
 lib64/
-parts/
 sdist/
 var/
 wheels/
@@ -225,4 +224,5 @@ dmypy.json
 # Cython debug symbols
 cython_debug/
 .idea
+media
 

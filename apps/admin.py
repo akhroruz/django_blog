@@ -19,8 +19,7 @@ class PostAdmin(ModelAdmin):
     list_display = ('title', 'categories', 'is_active', 'post_pic', 'created_at', 'status_buttons')
     exclude = ('slug', 'view', 'author', 'status')
     list_filter = ('category', 'created_at')
-
-    change_form_template = "admin/change_form.html"
+    change_form_template = "admin/custom/change_form.html"
 
     def response_change(self, request, obj):
         post = request.POST
