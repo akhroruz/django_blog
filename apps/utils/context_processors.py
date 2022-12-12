@@ -1,6 +1,4 @@
-from django.db.models import Count
-
-from apps.models import Category, Post, Siteinfo, PostView
+from apps.models import Category, Post, SiteInfo
 
 
 def context_category(request):
@@ -11,13 +9,13 @@ def context_category(request):
 
 def context_post(request):
     return {
-        'custom_posts': Post.objects.filter(status='active')
+        'custom_posts': Post.active.all()
     }
 
 
 def context_info(request):
     return {
-        'custom_info': Siteinfo.objects.first()
+        'custom_info': SiteInfo.objects.first()
     }
 
 

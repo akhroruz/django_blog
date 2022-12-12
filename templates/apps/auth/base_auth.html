@@ -238,7 +238,7 @@
                           fill="#2A7BE4"></path>
                   </svg></span></span></span></div>
         </div>
-{#        <small class="text-uppercase text-primary fw-bold bg-soft-primary py-2 pe-2 ps-1 rounded-end">customize</small>#}
+        {#        <small class="text-uppercase text-primary fw-bold bg-soft-primary py-2 pe-2 ps-1 rounded-end">customize</small>#}
     </div>
 </a>
 
@@ -253,6 +253,13 @@
 <script src="https://polyfill.io/v3/polyfill.min.js?features=window.scroll"></script>
 <script src="{% static "apps/auth/register/vendors/list.js/list.min.js" %}"></script>
 <script src="{% static "apps/auth/register/assets/js/theme.js" %}"></script>
+<script src="{% static 'apps/assets/js/jquery.min.js' %}"></script>
+<script src="{% static 'apps/js/jquery.maskedinput.min.js' %}"></script>
+<script>
+    $(function () {
+        $("#phone").mask("+999(99) 999-99-99");
+    });
+</script>
 </body>
 
 </html>

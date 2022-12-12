@@ -1,6 +1,5 @@
 {% extends 'apps/parts/base.html' %}
 {% load static %}
-
 {% block body_content %}
     <div class="no-pd" id="content">
         <div class="container">
@@ -12,18 +11,70 @@
             </div>
             <div class="create-post">
                 <div class="row">
-                    <div class="col-24 col-md-12">
-                        <div class="create-post__form">
-                            <h2 class="contact-title">Create post</h2>
-                            <form action="{% url 'create-post' %}" method="post" enctype="multipart/form-data">
+                    <div class="container px-4 mt-4">
+                        <form method="post" action="{% url 'create-post' %}" enctype="multipart/form-data"
+                              class="needs-validation"
+                              novalidate>
+
+                            <div class="row">
                                 {% csrf_token %}
-                                <div class="form-outline">
-                                    {{ form.as_p }}
-                                    <br>
+                                <div class="col-xl-12">
+                                    <div class="card mb-4">
+                                        <div class="card-header">Create new post</div>
+                                        <div class="card-body">
+                                            <div class="row gx-3 mb-3">
+                                                <div class="col-md-6">
+                                                    <label class="small mb-1" for="title">Title</label>
+                                                    <input class="form-control" id="title" type="text"
+                                                           placeholder="Enter post title" name="title" required>
+                                                    <div class="valid-feedback">
+                                                        Looks good!
+                                                    </div>
+                                                    <div class="invalid-feedback">
+                                                        Please provide a title.
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <label class="small mb-1" for="file">Banner image</label>
+                                                    <input class="form-control" id="file" type="file" name="pic"
+                                                           accept="image/*"
+                                                           required>
+                                                    <div class="valid-feedback">
+                                                        Looks good!
+                                                    </div>
+                                                    <div class="invalid-feedback">
+                                                        Please provide an image.
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <!-- Form Row        -->
+                                            <div class="mb-3">
+                                                <label class="small mb-1" for="category">Category</label>
+                                                <select id="category" name="category" class="custom-select" required
+                                                        multiple>
+                                                    {% for category in custom_categories %}
+                                                        <option value="{{ category.id }}">{{ category.name }}</option>
+                                                    {% endfor %}
+                                                </select>
+                                                <div class="valid-feedback">
+                                                    Looks good!
+                                                </div>
+                                                <div class="invalid-feedback">
+                                                    Select at least one category.
+                                                </div>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="editor1">Content</label>
+                                                <textarea name="content" id="editor1" rows="10" cols="80"
+                                                          required></textarea>
+                                            </div>
+                                            <input class="btn btn-info" type="submit" value="Submit post">
+                                        </div>
+                                    </div>
                                 </div>
-                                <button type="submit" class="btn -normal">Create post</button>
-                            </form>
-                        </div>
+                            </div>
+                        </form>
+
                     </div>
                 </div>
             </div>

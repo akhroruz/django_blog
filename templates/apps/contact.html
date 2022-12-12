@@ -43,12 +43,11 @@
                     <div class="col-12 col-md-6">
                         <div class="contact-us__form">
                             <h3 class="contact-title">LEAVE A MESSAGE</h3>
-                            <form action="/">
-                                <input type="text" placeholder="Name" name="description"/>
-                                <input type="email" placeholder="Email" name="email"/>
-                                <input type="text" placeholder="Website" name="website"/>
+                            <form action="{% url 'contact' %}" method="post">
+                                {% csrf_token %}
+                                <input type="text" placeholder="Name" name="name"/>
                                 <textarea name="message" cols="30" rows="8" placeholder="Message"></textarea>
-                                <button class="btn -normal">Send message</button>
+                                <button type="submit" class="btn -normal">Send message</button>
                             </form>
                         </div>
                     </div>

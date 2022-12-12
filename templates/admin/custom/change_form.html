@@ -1,8 +1,10 @@
 {% extends 'admin/change_form.html' %}
 
-{% block submit_buttons_bottom %}
-    <div class="submit-row">
-        <input type="submit" value="Send email" name="_make-unique">
-    </div>
+{% block after_related_objects %}
     {{ block.super }}
+    <input type="submit" value="Active" name="_active">
+    <input type="submit" value="Cancel" name="_cancel">
+    <input type="submit" value="Preview" name="_preview">
+    <input type="submit" value="Create pdf" name="make_pdf">
 {% endblock %}
+

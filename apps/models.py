@@ -9,7 +9,7 @@ from django.utils.text import slugify
 from django_resized import ResizedImageField
 
 
-class Siteinfo(Model):
+class SiteInfo(Model):
     description = RichTextUploadingField()
     about = TextField()
     location = CharField(max_length=255)
@@ -27,17 +27,12 @@ class Siteinfo(Model):
 
 
 class User(AbstractUser):
-    # class Type(TextChoices):
-    #     ADMIN = 'admin', 'Bu admin'
-    #     CLIENT = 'client', 'Bu client'
-    # type = CharField(max_length=25, choices=Type.choices, default=Type.CLIENT)
-    #
     phone_regex = RegexValidator(regex=r'^\+?1?\d{9,15}$')
     phone = CharField(validators=[phone_regex], max_length=13, blank=True)
     bio = TextField(null=True, blank=True)
-    email = EmailField(max_length=255, unique=True)
+    email = EmailField(max_length=255, unique=True, blank=True)
     is_active = BooleanField(default=False)
-    image = ImageField(upload_to='profile/', default='default-avatar.png')
+    image = ImageField(upload_to='profile/', default='media/profile/default.jpg')
 
     class Meta:
         verbose_name_plural = 'Userlar'
@@ -77,12 +72,9 @@ class Category(Model):
         return self.name
 
 
-class ActivePostManager(Manager):
+class ActivePostsManager(Manager):
     def get_queryset(self):
         return super().get_queryset().filter(status=Post.Status.ACTIVE)
-
-    # def trend_posts(self):
-        # return self.get_queryset().order_by('-created_at')
 
 
 class Post(Model):
@@ -90,6 +82,7 @@ class Post(Model):
         PENDING = 'pending', 'Kutilmoqda'
         ACTIVE = 'active', 'Faol'
         CANCEL = 'cancel', 'Rad etilgan'
+
     title = CharField(max_length=255)
     slug = SlugField(max_length=255, unique=True)
     content = RichTextUploadingField()
@@ -98,10 +91,10 @@ class Post(Model):
     pic = ResizedImageField(upload_to='posts/')
     view = IntegerField(default=0)
     category = ManyToManyField(Category)
-    updated_at = DateTimeField(auto_now=True)
-    created_at = DateTimeField(auto_now_add=True)
-    active = ActivePostManager()
+    created_at = DateTimeField(auto_now=True)
+
     objects = Manager()
+    active = ActivePostsManager()
 
     def save(self, *args, **kwargs):
         if not self.slug:
@@ -137,7 +130,6 @@ class Post(Model):
 
     class Meta:
         verbose_name_plural = 'Postlar'
-        verbose_name = 'Post'
 
 
 class Comment(Model):
@@ -157,3 +149,13 @@ class Comment(Model):
 class PostView(Model):
     post = ForeignKey(Post, CASCADE)
     created_at = DateTimeField(auto_now=True)
+
+
+class Message(Model):
+    author = ForeignKey(User, PROTECT)
+    name = CharField(max_length=255)
+    message = TextField()
+    status = BooleanField(default=False)
+
+    def __str__(self):
+        return self.name

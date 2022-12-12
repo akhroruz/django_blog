@@ -21,8 +21,7 @@ INSTALLED_APPS = [
     'ckeditor',
     'ckeditor_uploader',
     'fontawesomefree',
-    # 'widget_tweaks',
-    # 'django_celery_results',
+    'django_crontab',
 ]
 
 MIDDLEWARE = [
@@ -108,6 +107,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 LOGIN_URL = 'login'
 
 CKEDITOR_UPLOAD_PATH = 'posts/'
+
 CKEDITOR_CONFIGS = {
     'default': {
         'skin': 'moono',
@@ -173,5 +173,13 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'turginboyevahrorbek7@gmail.com'
 EMAIL_HOST_PASSWORD = 'akxwtnykqgstplwz'
 
-CELERY_RESULT_BACKEND = 'django-db'
-CELERY_CACHE_BACKEND = 'django-cache'
+CELERY_TIMEZONE = "Asia/Tashkent"
+CELERY_ACCEPT_CONTENT = ['application/json']
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TASK_SERIALIZER = 'json'
+
+CELERY_BROKER_URL = 'redis://localhost:6379'
+
+CRONJOBS = [
+    ('* * * * *', 'apps.cron.my_scheduled_job'),
+]

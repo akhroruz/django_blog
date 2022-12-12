@@ -1,0 +1,21 @@
+1) blog, admin tomonidan tasdiqlanishi (adminkada status bolishi, active, cancel, pending) ✅
+1.1) ckeditor ulanishi ruyhatdan otgan odam blog qosha olishi ✅
+2) /contact xabarlarni adminkada chiqadigan qilish kk, va tagida button(xabar yuborish [pochtasiga yuborilsin]) ✅
+
+3) adminka ozbekcha bolsin (faqat app nomlari) ✅
+4) post detailda (preview, cancel, active degan buttonlar bolsin) ✅
+5) profile page (user ozining malumotlarini ozgartiradi, ) ✅
+6) post detailda yana 1ta button (pdf ga otkazish) ✅
+7) githubga qoyish ✅
+8) phone numberni chiroyli chiqarish ✅
+object manager ✅
+
+9) cron bilan cancel bolgan postlarni 7kundan keyin delete qilsin
+
+1. register ✅
+2. reset password (login page parolni unutib qoldirdim)
+3. change password (profile page da)
+
+4. confirm email (one time link) ✅
+5. sms yuborish (profile pageda tasdiqlash buttoni boladi)
+6. google, telegram

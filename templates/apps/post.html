@@ -77,14 +77,13 @@
                                     </div>
                                     <div class="post-footer__author">
                                         <div class="author__avatar">
-                                            <img src="{% static 'apps/assets/images/post_detail/auth.png' %}"
+                                            <img src="{{ user.image.url }}"
                                                  alt="Author avatar"/>
                                         </div>
 
                                         <div class="author__info">
-                                            <h5>Kelvin Conrad</h5>
-                                            <p>An avid Ui/Ux designer & Web developer who is passionate about solving
-                                                complex UX challenges across digital businesses.</p>
+                                            <h5>{{ user.first_name }}</h5>
+                                            <p>{{ user.bio }}</p>
                                             <!-- social Media -->
                                             <div class="social-media">
                                                 <a href="#">
@@ -135,17 +134,19 @@
                                     </div>
                                     <!-- comments  -->
                                     <div class="post-footer__comment">
-                                        <h3 class="comment-title"><span>{{ post.comment_count }} comment</span></h3>
+                                        {% if comments.count > 0 %}
+                                            <h3 class="comment-title"><span>{{ post.comment_count }} comment</span></h3>
+                                        {% endif %}
                                         <div class="post-footer__comment__detail">
                                             {% for comment in comments|slice:3 %}
                                                 <div class="comment__item">
                                                     <div class="comment__item__avatar">
-                                                        <img src="{% static 'apps/assets/images/fav.png' %}"
+                                                        <img src="{{ user.image.url }}"
                                                              alt="Author avatar"/>
                                                     </div>
                                                     <div class="comment__item__content">
                                                         <div class="comment__item__content__header">
-                                                            <h5>{{ comment.author }}</h5>
+                                                            <h5>{{ comment.author.first_name }}</h5>
                                                             <div class="data">
                                                                 <p>
                                                                     <i class="far fa-clock"></i>{{ comment.created_at|date:'M d, Y' }}

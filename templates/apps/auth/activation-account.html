@@ -1,7 +1,5 @@
 {% autoescape off %}
-    Hi {{ user.username }},
+    Hi, Please click on the link below to confirm your registration:
 
-    Please click on the link below to confirm your registration:
-
-    http://{{ domain }}/{{ type }}/{{ uid }}/{{ token }}
+    http://{{ domain }}/activate/{{ uid }}/{{ token }}
 {% endautoescape %}

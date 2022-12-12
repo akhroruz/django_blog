@@ -1,36 +1,23 @@
+from datetime import datetime, timedelta
+
 from django.contrib import messages
 from django.contrib.auth import login
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView
 from django.contrib.sites.shortcuts import get_current_site
-from django.db.models import F
 from django.http import HttpResponse
 from django.shortcuts import redirect, get_object_or_404
 from django.urls import reverse_lazy
 from django.utils.encoding import force_str
 from django.utils.http import urlsafe_base64_decode
-from django.views.generic import ListView, DetailView, FormView, TemplateView
+from django.views.generic import ListView, DetailView, FormView, TemplateView, UpdateView
 
-from apps.forms import CreateCommentForm, CustomLoginForm, CreatePostForm, RegisterForm, ForgotPasswordForm
-from apps.models import Category, Post, Siteinfo, Comment, PostView, User
+from apps.forms import CreateCommentForm, CustomLoginForm, CreatePostForm, RegisterForm, ForgotPasswordForm, \
+    MessageForm, ResetPasswordForm, ProfileForm
+from apps.models import Category, Post, SiteInfo, Comment, PostView, User
 from apps.utils.make_pdf import render_to_pdf
 from apps.utils.tasks import send_to_gmail
 from apps.utils.token import account_activation_token
-
-from django.http import HttpResponse
-from django.views.generic import View
-from datetime import datetime
-
-
-class GeneratePdf(View):
-    def get(self, request, *args, **kwargs):
-        post = Post.objects.get(pk=41)
-        data = {
-            'post': post,
-        }
-        # v1
-        pdf = render_to_pdf('make_pdf.html', data)
-        return HttpResponse(pdf, content_type='application/pdf')
 
 
 class IndexView(ListView):
@@ -44,16 +31,25 @@ class IndexView(ListView):
         return context
 
 
+class GeneratePdf(DetailView):
+    slug_url_kwarg = 'pk'
+
+    def get(self, request, *args, **kwargs):
+        post = Post.objects.get(pk=kwargs.get('pk'))
+        data = {
+            'post': post,
+        }
+        pdf = render_to_pdf('make_pdf.html', data)
+        return HttpResponse(pdf, content_type='application/pdf')
+
+
 class PostListView(ListView):
-    queryset = Post.objects.filter(status='active').order_by('-created_at')
+    queryset = Post.active.order_by('-created_at')
     template_name = 'apps/blog-category.html'
     paginate_by = 4
     context_object_name = 'posts'
 
     def get_context_data(self, *, object_list=None, **kwargs):
-        #
-        # Post.objects.filter(status='active').order_by('-created_at')
-        # Post.active.order_by('-created_at')
         context = super().get_context_data(object_list=object_list, **kwargs)
         slug = self.request.GET.get('category')
         qs = self.get_queryset()
@@ -70,12 +66,22 @@ class PostListView(ListView):
 
 class AboutView(ListView):
     template_name = 'apps/about.html'
-    model = Siteinfo
+    model = SiteInfo
     context_object_name = 'about'
 
 
-class ContactView(TemplateView):
+class ContactView(FormView):
     template_name = 'apps/contact.html'
+    form_class = MessageForm
+    success_url = reverse_lazy('index')
+
+    def form_valid(self, form):
+        form.instance.author = self.request.user
+        form.save()
+        return super().form_valid(form)
+
+    def form_invalid(self, form):
+        return super().form_invalid(form)
 
 
 class DetailFormPostView(FormView, DetailView):
@@ -85,7 +91,6 @@ class DetailFormPostView(FormView, DetailView):
     form_class = CreateCommentForm
 
     def get_queryset(self):
-        # Post.objects.filter(slug=self.kwargs.get('slug')).update(view=F('view') + 1)
         PostView.objects.create(post_id=Post.objects.filter(slug=self.kwargs.get('slug')).first().pk)
         return super().get_queryset()
 
@@ -125,22 +130,12 @@ class RegisterView(FormView):
     redirect_authenticated_user = True
     success_url = reverse_lazy('login')
 
-    # def form_valid(self, form):
-    #     user = form.save()
-    #     if user is not None:
-    #         login(self.request, user)
-    #     return super().form_valid(form)
     def form_valid(self, form):
         user = form.save()
         if user is not None:
             login(self.request, user)
         current_site = get_current_site(self.request)
-        send_to_gmail(form.data.get('email'), current_site.domain, 'register')
-        messages.add_message(
-            self.request,
-            level=messages.WARNING,
-            message='Successfully send your email, Please activate your profile'
-        )
+        send_to_gmail.apply_async(args=[form.data.get('email'), current_site.domain, 'activation'])
 
         return super().form_valid(form)
 
@@ -154,13 +149,13 @@ class RegisterView(FormView):
 
 
 class ForgotPasswordPage(FormView):
+    template_name = 'apps/auth/forgot_password.html'
     form_class = ForgotPasswordForm
     success_url = reverse_lazy('login')
-    template_name = 'apps/auth/forgot_password.html'
 
     def form_valid(self, form):
         current_site = get_current_site(self.request)
-        send_to_gmail(form.data.get('email'), current_site.domain, 'forgot')
+        send_to_gmail.apply_async(args=[form.data.get('email'), current_site.domain, 'forgot'], countdown=5)
         return super().form_valid(form)
 
 
@@ -190,6 +185,23 @@ class ActivateEmailView(TemplateView):
             return HttpResponse('Activation link is invalid!')
 
 
+class ResetPasswordView(FormView):
+    template_name = 'apps/auth/reset_password.html'
+    form_class = ResetPasswordForm
+    success_url = reverse_lazy('login')
+
+    def form_valid(self, form):
+        uid = self.request.GET.get('uid')
+        token = self.request.GET.get('token')
+        uid = force_str(urlsafe_base64_decode(uid))
+        user = User.objects.get(pk=uid)
+
+        if user is not None and account_activation_token.check_token(user, token):
+            user.password = form.clean_password()
+            user.save()
+        return super().form_valid(form)
+
+
 class CreatePostView(LoginRequiredMixin, FormView):
     template_name = 'apps/create-post.html'
     form_class = CreatePostForm
@@ -199,3 +211,26 @@ class CreatePostView(LoginRequiredMixin, FormView):
         form.instance.author = self.request.user
         form.save()
         return super().form_valid(form)
+
+
+class ProfileView(UpdateView):
+    template_name = 'apps/auth/profile.html'
+    slug_url_kwarg = 'pk'
+    queryset = User.objects.all()
+    success_url = reverse_lazy('index')
+    form_class = ProfileForm
+
+    def form_valid(self, form):
+        form.save()
+        return super().form_valid(form)
+
+
+def my_scheduled_job():
+    date = datetime.today()
+    start_week = date - timedelta(date.weekday())
+    end_week = start_week + timedelta(7)
+    entries = Post.objects.filter(created_at__range=[start_week, end_week])
+    return entries
+
+
+print(my_scheduled_job())

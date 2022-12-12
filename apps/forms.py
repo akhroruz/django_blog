@@ -1,10 +1,11 @@
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.hashers import make_password
 from django.core.exceptions import ValidationError
+from django.db.transaction import atomic
 from django.forms import ModelForm, CharField, PasswordInput, ModelMultipleChoiceField, CheckboxSelectMultiple, Form, \
     EmailField
 
-from apps.models import Comment, User, Post, Category
+from apps.models import Comment, User, Post, Category, Message
 
 
 class RegisterForm(ModelForm):
@@ -58,3 +59,37 @@ class ForgotPasswordForm(Form):
         if not User.objects.filter(email=email).exists():
             raise ValidationError('This profile is not registered')
         return email
+
+    class Meta:
+        model = User
+        fields = ('email',)
+
+
+class ResetPasswordForm(Form):
+    confirm_password = CharField(widget=PasswordInput(attrs={"autocomplete": "current-password"}))
+
+    def clean_password(self):
+        password = self.data.get('password')
+        confirm_password = self.data.get('confirm_password')
+        if confirm_password != password:
+            raise ValidationError('Parolni tekshiring!')
+        return make_password(password)
+
+    class Meta:
+        model = User
+        fields = ('password',)
+
+
+class MessageForm(ModelForm):
+    name = CharField(max_length=255)
+    message = CharField()
+
+    class Meta:
+        model = Message
+        fields = ('name', 'message')
+
+
+class ProfileForm(ModelForm):
+    class Meta:
+        model = User
+        fields = ('first_name', 'last_name', 'email', 'phone', 'bio', 'image')

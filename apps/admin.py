@@ -1,10 +1,13 @@
 from django.contrib.admin import ModelAdmin, register
+from django.core.mail import send_mail
 from django.http import HttpResponseRedirect
 from django.shortcuts import redirect
 from django.urls import reverse, path
 from django.utils.html import format_html
 
-from apps.models import Category, Post, Siteinfo
+from apps.models import Category, Post, SiteInfo, Message, User
+from apps.utils.tasks import send_message_to_gmail
+from root.settings import EMAIL_HOST_USER
 
 
 @register(Category)
@@ -34,12 +37,10 @@ class PostAdmin(ModelAdmin):
         elif '_preview' in post:
             return redirect('post_form_detail', slug=obj.slug)
         elif "_make-unique" in request.POST:
-            # matching_names_except_this = self.get_queryset(request).filter(name=obj.name).exclude(pk=obj.id)
-            # matching_names_except_this.delete()
-            # obj.is_unique = True
-            # obj.save()
             self.message_user(request, "This villain is now unique")
             return HttpResponseRedirect(".")
+        elif 'make_pdf' in post:
+            return redirect('make_pdf', pk=obj.pk)
 
         return super().response_change(request, obj)
 
@@ -80,6 +81,21 @@ class PostAdmin(ModelAdmin):
     is_active.short_description = 'Status'
 
 
-@register(Siteinfo)
+@register(SiteInfo)
 class AboutAdmin(ModelAdmin):
     pass
+
+
+@register(Message)
+class MessageAdmin(ModelAdmin):
+    list_display = ('name', 'author', 'status')
+    exclude = ('status',)
+    change_form_template = "admin/custom/change_form_message.html"
+
+    def response_change(self, request, obj: Message):
+        post = request.POST
+        if "send_email" in post:
+            obj.status = True
+            obj.save()
+            send_message_to_gmail.apply_async(args=[obj.author.email], countdown=5)
+        return super().response_change(request, obj)
