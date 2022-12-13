@@ -93,3 +93,28 @@ class ProfileForm(ModelForm):
     class Meta:
         model = User
         fields = ('first_name', 'last_name', 'email', 'phone', 'bio', 'image')
+
+
+class ChangePasswordForm(Form):
+    password = CharField(max_length=255)
+    new_password = CharField(max_length=255)
+    confirm_password = CharField(max_length=255)
+
+    def clean_password(self):
+        user = self.initial['request'].user
+        password = self.cleaned_data.get('password')
+        if not user.check_password(password):
+            raise ValidationError('Eski parol xato')
+        return password
+
+    def clean_new_password(self):
+        new_password = self.data.get('new_password')
+        confirm_password = self.data.get('confirm_password')
+        if new_password != confirm_password:
+            raise ValidationError('Parol xato!')
+        return new_password
+
+    def save(self, user):
+        new_password = self.cleaned_data.get('new_password')
+        user.set_password(new_password)
+        user.save()
