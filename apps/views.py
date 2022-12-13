@@ -1,19 +1,20 @@
 from datetime import datetime, timedelta
 
 from django.contrib import messages
-from django.contrib.auth import login
+from django.contrib.auth import login, authenticate
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView
 from django.contrib.sites.shortcuts import get_current_site
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import redirect, get_object_or_404
 from django.urls import reverse_lazy
 from django.utils.encoding import force_str
 from django.utils.http import urlsafe_base64_decode
+from django.views import View
 from django.views.generic import ListView, DetailView, FormView, TemplateView, UpdateView
 
 from apps.forms import CreateCommentForm, CustomLoginForm, CreatePostForm, RegisterForm, ForgotPasswordForm, \
-    MessageForm, ResetPasswordForm, ProfileForm
+    MessageForm, ResetPasswordForm, ProfileForm, ChangePasswordForm
 from apps.models import Category, Post, SiteInfo, Comment, PostView, User
 from apps.utils.make_pdf import render_to_pdf
 from apps.utils.tasks import send_to_gmail
@@ -213,7 +214,7 @@ class CreatePostView(LoginRequiredMixin, FormView):
         return super().form_valid(form)
 
 
-class ProfileView(UpdateView):
+class ProfileView(LoginRequiredMixin, UpdateView):
     template_name = 'apps/auth/profile.html'
     slug_url_kwarg = 'pk'
     queryset = User.objects.all()
@@ -225,6 +226,20 @@ class ProfileView(UpdateView):
         return super().form_valid(form)
 
 
+class ChangePasswordPage(LoginRequiredMixin, View):
+
+    def post(self, request, *args, **kwargs):
+        username = request.user.username
+        user = request.user
+        form = ChangePasswordForm(request.POST, initial={'request': request})
+        if form.is_valid():
+            form.save(request.user)
+            password = form.data.get('new_password')
+            user = authenticate(username=username, password=password)
+            login(request, user)
+        return redirect('profile', user.pk)
+
+
 def my_scheduled_job():
     date = datetime.today()
     start_week = date - timedelta(date.weekday())
@@ -232,5 +247,4 @@ def my_scheduled_job():
     entries = Post.objects.filter(created_at__range=[start_week, end_week])
     return entries
 
-
-print(my_scheduled_job())
+# print(my_scheduled_job())

@@ -16,12 +16,17 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'django.forms',
     'apps',
+
     'ckeditor',
     'ckeditor_uploader',
     'fontawesomefree',
     'django_crontab',
+
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.telegram'
 ]
 
 MIDDLEWARE = [
@@ -56,7 +61,7 @@ TEMPLATES = [
     },
 ]
 
-FORM_RENDERER = 'django.forms.renderers.TemplatesSetting'
+# FORM_RENDERER = 'django.forms.renderers.TemplatesSetting'
 
 WSGI_APPLICATION = 'root.wsgi.application'
 
@@ -104,7 +109,35 @@ MEDIA_ROOT = os.path.join(BASE_DIR / 'media/')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-LOGIN_URL = 'login'
+LOGIN_URL = 'login/'
+
+
+SITE_ID = 1
+# Provider specific settings
+SOCIALACCOUNT_PROVIDERS = {
+    # 'google': {
+    #     # For each OAuth based provider, either add a ``SocialApp``
+    #     # (``socialaccount`` app) containing the required client
+    #     # credentials, or list them here:
+    #     'APP': {
+    #         'client_id': '123',
+    #         'secret': '456',
+    #         'key': ''
+    #     }
+    # },
+    'telegram': {
+        'TOKEN': '5861999459:AAGEC9nUNy6UD--8WTyrBzNpD0DV6g3EqW0'
+    }
+
+}
+
+AUTHENTICATION_BACKENDS = [
+    # Needed to login by username in Django admin, regardless of `allauth`
+    'django.contrib.auth.backends.ModelBackend',
+
+    # `allauth` specific authentication methods, such as login by e-mail
+    # 'allauth.account.auth_backends.AuthenticationBackend',
+]
 
 CKEDITOR_UPLOAD_PATH = 'posts/'
 
@@ -181,5 +214,5 @@ CELERY_TASK_SERIALIZER = 'json'
 CELERY_BROKER_URL = 'redis://localhost:6379'
 
 CRONJOBS = [
-    ('* * * * *', 'apps.cron.my_scheduled_job'),
+    ('*/1 * * * *', 'apps.utils.cron.my_scheduled_job'),
 ]
