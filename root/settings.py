@@ -61,7 +61,6 @@ TEMPLATES = [
     },
 ]
 
-# FORM_RENDERER = 'django.forms.renderers.TemplatesSetting'
 
 WSGI_APPLICATION = 'root.wsgi.application'
 
@@ -111,9 +110,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 LOGIN_URL = 'login/'
 
-
 SITE_ID = 1
-# Provider specific settings
 SOCIALACCOUNT_PROVIDERS = {
     # 'google': {
     #     # For each OAuth based provider, either add a ``SocialApp``
@@ -132,11 +129,8 @@ SOCIALACCOUNT_PROVIDERS = {
 }
 
 AUTHENTICATION_BACKENDS = [
-    # Needed to login by username in Django admin, regardless of `allauth`
     'django.contrib.auth.backends.ModelBackend',
-
-    # `allauth` specific authentication methods, such as login by e-mail
-    # 'allauth.account.auth_backends.AuthenticationBackend',
+    'allauth.account.auth_backends.AuthenticationBackend',
 ]
 
 CKEDITOR_UPLOAD_PATH = 'posts/'

@@ -1,11 +1,9 @@
-from datetime import datetime, timedelta
-
 from django.contrib import messages
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView
 from django.contrib.sites.shortcuts import get_current_site
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse
 from django.shortcuts import redirect, get_object_or_404
 from django.urls import reverse_lazy
 from django.utils.encoding import force_str
@@ -80,9 +78,6 @@ class ContactView(FormView):
         form.instance.author = self.request.user
         form.save()
         return super().form_valid(form)
-
-    def form_invalid(self, form):
-        return super().form_invalid(form)
 
 
 class DetailFormPostView(FormView, DetailView):
@@ -238,13 +233,3 @@ class ChangePasswordPage(LoginRequiredMixin, View):
             user = authenticate(username=username, password=password)
             login(request, user)
         return redirect('profile', user.pk)
-
-
-def my_scheduled_job():
-    date = datetime.today()
-    start_week = date - timedelta(date.weekday())
-    end_week = start_week + timedelta(7)
-    entries = Post.objects.filter(created_at__range=[start_week, end_week])
-    return entries
-
-# print(my_scheduled_job())
