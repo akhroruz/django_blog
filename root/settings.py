@@ -1,11 +1,17 @@
 import os.path
 from pathlib import Path
+import environ
+
+env = environ.Env(
+    DEBUG=(bool, False)
+)
 
 BASE_DIR = Path(__file__).resolve().parent.parent
+environ.Env.read_env(os.path.join(BASE_DIR, 'root/.env'))
 
-SECRET_KEY = 'django-insecure-l^o(8$edg3k5@xmwo@-89$11zfps!4=a-#87nm&i@ik%3@^eb+'
+SECRET_KEY = env('SECRET_KEY')
 
-DEBUG = True
+DEBUG = env('DEBUG')
 
 ALLOWED_HOSTS = ['*']
 
@@ -61,7 +67,6 @@ TEMPLATES = [
     },
 ]
 
-
 WSGI_APPLICATION = 'root.wsgi.application'
 
 AUTH_USER_MODEL = 'apps.User'
@@ -69,9 +74,9 @@ AUTH_USER_MODEL = 'apps.User'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'django_blog',
-        'USER': 'postgres',
-        'PASSWORD': '1',
+        'NAME': env('DATABASE_NAME'),
+        'USER': env('DATABASE_USER'),
+        'PASSWORD': env('DATABASE_PASSWORD'),
         'HOST': 'localhost',
         'PORT': 5432
     }
@@ -197,8 +202,8 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'turginboyevahrorbek7@gmail.com'
-EMAIL_HOST_PASSWORD = 'akxwtnykqgstplwz'
+EMAIL_HOST_USER = env('EMAIL_HOST')
+EMAIL_HOST_PASSWORD = env('EMAIL_PASSWORD')
 
 CELERY_TIMEZONE = "Asia/Tashkent"
 CELERY_ACCEPT_CONTENT = ['application/json']
