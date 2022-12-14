@@ -128,8 +128,10 @@ class RegisterView(FormView):
 
     def form_valid(self, form):
         user = form.save()
-        if user is not None:
-            login(self.request, user)
+        if user:
+            user = authenticate(username=user.username, password=user.password)
+            if user:
+                login(self.request, user)
         current_site = get_current_site(self.request)
         send_to_gmail.apply_async(args=[form.data.get('email'), current_site.domain, 'activation'])
 
@@ -222,7 +224,6 @@ class ProfileView(LoginRequiredMixin, UpdateView):
 
 
 class ChangePasswordPage(LoginRequiredMixin, View):
-
     def post(self, request, *args, **kwargs):
         username = request.user.username
         user = request.user

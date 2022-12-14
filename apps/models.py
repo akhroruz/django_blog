@@ -15,7 +15,7 @@ class SiteInfo(Model):
     location = CharField(max_length=255)
     email = EmailField(max_length=255)
     phone_regex = RegexValidator(regex=r'^\+?1?\d{9,15}$')
-    phone = CharField(validators=[phone_regex], max_length=13, blank=True)
+    phone = CharField(validators=[phone_regex], max_length=20, blank=True)
     social = ArrayField(CharField(max_length=255))
 
     class Meta:
@@ -27,8 +27,8 @@ class SiteInfo(Model):
 
 
 class User(AbstractUser):
-    phone_regex = RegexValidator(regex=r'^\+?1?\d{9,15}$')
-    phone = CharField(validators=[phone_regex], max_length=13, blank=True)
+    # phone_regex = RegexValidator(regex=r'^\+?1?\d{9,15}$')
+    phone = CharField(max_length=20, blank=True)
     bio = TextField(null=True, blank=True)
     email = EmailField(max_length=255, unique=True, blank=True)
     is_active = BooleanField(default=False)

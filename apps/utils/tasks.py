@@ -19,7 +19,7 @@ def send_to_gmail(email, domain, type_mail):
     subject = 'Activate your account'
     template = 'apps/auth/activation-account.html'
 
-    user = User.objects.filter(email=email)
+    user = User.objects.filter(email=email).first()
     message = render_to_string(template, {
         'user': user,
         'domain': domain,
@@ -57,6 +57,6 @@ def send_message_to_gmail(email):
     message = 'Your offer has been reviewed.'
     from_email = EMAIL_HOST_USER
     recipient_list = [email]
-
+    print(subject, message, from_email, recipient_list)
     result = send_mail(subject, message, from_email, recipient_list)
     return result
