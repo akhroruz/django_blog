@@ -22,6 +22,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sites',
+
     'apps',
 
     'ckeditor',
@@ -32,7 +34,9 @@ INSTALLED_APPS = [
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
-    'allauth.socialaccount.providers.telegram'
+    'allauth.socialaccount.providers.telegram',
+    'allauth.socialaccount.providers.google',
+    'allauth.socialaccount.providers.github',
 ]
 
 MIDDLEWARE = [
@@ -117,21 +121,33 @@ LOGIN_URL = 'login/'
 
 SITE_ID = 1
 SOCIALACCOUNT_PROVIDERS = {
-    # 'google': {
-    #     # For each OAuth based provider, either add a ``SocialApp``
-    #     # (``socialaccount`` app) containing the required client
-    #     # credentials, or list them here:
-    #     'APP': {
-    #         'client_id': '123',
-    #         'secret': '456',
-    #         'key': ''
-    #     }
-    # },
+    'google': {
+        'SCOPE': [
+            'profile',
+            'email',
+        ],
+        'AUTH_PARAMS': {
+            'access_type': 'online',
+        }
+    },
     'telegram': {
         'TOKEN': '5861999459:AAGEC9nUNy6UD--8WTyrBzNpD0DV6g3EqW0'
+    },
+    'github': {
+        'SCOPE': [
+            'user',
+            'repo',
+            'read:org',
+        ],
     }
-
 }
+
+LOGIN_REDIRECT_URL = '/'
+
+SOCIALACCOUNT_QUERY_EMAIL = True
+ACCOUNT_LOGOUT_ON_GET = True
+ACCOUNT_UNIQUE_EMAIL = True
+ACCOUNT_EMAIL_REQUIRED = True
 
 AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
@@ -168,7 +184,7 @@ CKEDITOR_CONFIGS = {
             {'name': 'colors', 'items': ['TextColor', 'BGColor']},
             {'name': 'tools', 'items': ['Maximize', 'ShowBlocks']},
             {'name': 'about', 'items': ['About']},
-            '/',  # put this to force next toolbar on new line
+            '/',
             {'name': 'yourcustomtools', 'items': [
                 'Preview',
                 'Maximize',

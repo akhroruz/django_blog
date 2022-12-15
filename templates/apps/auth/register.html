@@ -1,5 +1,6 @@
 {% extends 'apps/auth/base_auth.html' %}
 {% load static %}
+{% load socialaccount %}
 
 {% block title %}
     register
@@ -56,15 +57,13 @@
             </div>
             <div class="row g-2 mt-2">
                 <div class="col-sm-6">
-                    <a class="btn btn-outline-google-plus btn-sm d-block w-100" href="#">
+                    <a class="btn btn-outline-google-plus btn-sm d-block w-100" href="/accounts/google/login">
                         <span class="fab fa-google-plus-g me-2" data-fa-transform="grow-8"></span>
-                        google
                     </a>
                 </div>
                 <div class="col-sm-6">
-                    <a class="btn btn-outline-facebook btn-sm d-block w-100" href="#">
-                        <span class="fab fa-facebook-square me-2" data-fa-transform="grow-8"></span>
-                        facebook
+                    <a class="btn btn-outline-github btn-sm d-block w-100" href="{% provider_login_url 'github' %}">
+                        <span class="fab fa-github-square me-2" data-fa-transform="grow-8"></span>
                     </a>
                 </div>
             </div>

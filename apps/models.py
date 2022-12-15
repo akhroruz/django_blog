@@ -14,8 +14,8 @@ class SiteInfo(Model):
     about = TextField()
     location = CharField(max_length=255)
     email = EmailField(max_length=255)
-    phone_regex = RegexValidator(regex=r'^\+?1?\d{9,15}$')
-    phone = CharField(validators=[phone_regex], max_length=20, blank=True)
+    # phone_regex = RegexValidator(regex=r'^\+?1?\d{9,15}$')
+    phone = CharField(max_length=20, blank=True)
     social = ArrayField(CharField(max_length=255))
 
     class Meta:
@@ -156,6 +156,10 @@ class Message(Model):
     name = CharField(max_length=255)
     message = TextField()
     status = BooleanField(default=False)
+
+    class Meta:
+        verbose_name = 'Xabar'
+        verbose_name_plural = 'Xabarlar'
 
     def __str__(self):
         return self.name

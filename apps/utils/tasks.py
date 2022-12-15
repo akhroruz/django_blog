@@ -10,22 +10,28 @@ from root.settings import EMAIL_HOST_USER
 
 
 @shared_task
-def send_to_gmail(email, domain, type_mail):
+def send_to_gmail(email, domain, type_mail='activate'):
     print('ACCEPT TASK')
-    # if type_mail == 'forgot':
-    #     subject = 'Reset password'
-    #     template = 'apps/auth/forgot_password.html'
-    # else:
-    subject = 'Activate your account'
-    template = 'apps/auth/activation-account.html'
-
     user = User.objects.filter(email=email).first()
-    message = render_to_string(template, {
+    context = {
         'user': user,
         'domain': domain,
         'uid': urlsafe_base64_encode(force_bytes(str(user.pk))),
         'token': account_activation_token.make_token(user),
-    })
+    }
+
+    subject = 'Activate your account'
+    template = 'email_activation.html'
+    if type_mail == 'reset':
+        subject = 'Trouble signing in?'
+        template = 'reset_password.html'
+    elif type_mail == 'change':
+        subject = ''
+    else:
+        context['username'] = user.username
+    message = render_to_string(f'apps/auth/email/{template}', context)
+
+
     recipient_list = [email]
     email = EmailMessage(subject, message, EMAIL_HOST_USER, recipient_list)
     email.content_subtype = 'html'

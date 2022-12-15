@@ -4,10 +4,10 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView
 from django.contrib.sites.shortcuts import get_current_site
 from django.http import HttpResponse
-from django.shortcuts import redirect, get_object_or_404
+from django.shortcuts import redirect, get_object_or_404, render
 from django.urls import reverse_lazy
-from django.utils.encoding import force_str
-from django.utils.http import urlsafe_base64_decode
+from django.utils.encoding import force_str, force_bytes
+from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 from django.views import View
 from django.views.generic import ListView, DetailView, FormView, TemplateView, UpdateView
 
@@ -26,7 +26,7 @@ class IndexView(ListView):
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(object_list=object_list, **kwargs)
-        context['posts'] = Post.objects.filter(status='active').order_by('-created_at')[:4]
+        context['posts'] = Post.active.order_by('-created_at')[:4]
         return context
 
 
@@ -133,28 +133,13 @@ class RegisterView(FormView):
             if user:
                 login(self.request, user)
         current_site = get_current_site(self.request)
-        send_to_gmail.apply_async(args=[form.data.get('email'), current_site.domain, 'activation'])
-
+        send_to_gmail.apply_async(args=[form.data.get('email'), current_site.domain])
         return super().form_valid(form)
 
     def get(self, request, *args, **kwargs):
         if request.user.is_authenticated:
             return redirect('login')
         return super().get(request, *args, **kwargs)
-
-    def form_invalid(self, form):
-        return super().form_invalid(form)
-
-
-class ForgotPasswordPage(FormView):
-    template_name = 'apps/auth/forgot_password.html'
-    form_class = ForgotPasswordForm
-    success_url = reverse_lazy('login')
-
-    def form_valid(self, form):
-        current_site = get_current_site(self.request)
-        send_to_gmail.apply_async(args=[form.data.get('email'), current_site.domain, 'forgot'], countdown=5)
-        return super().form_valid(form)
 
 
 class ActivateEmailView(TemplateView):
@@ -169,10 +154,10 @@ class ActivateEmailView(TemplateView):
             user = User.objects.get(pk=uid)
         except Exception as e:
             user = None
-        if user is not None and account_activation_token.check_token(user, token):
+        if user and account_activation_token.check_token(user, token):
             user.is_active = True
             user.save()
-            login(request, user)
+            login(request, user, backend='django.contrib.auth.backends.ModelBackend')
             messages.add_message(
                 request=request,
                 level=messages.SUCCESS,
@@ -181,23 +166,6 @@ class ActivateEmailView(TemplateView):
             return redirect('index')
         else:
             return HttpResponse('Activation link is invalid!')
-
-
-class ResetPasswordView(FormView):
-    template_name = 'apps/auth/reset_password.html'
-    form_class = ResetPasswordForm
-    success_url = reverse_lazy('login')
-
-    def form_valid(self, form):
-        uid = self.request.GET.get('uid')
-        token = self.request.GET.get('token')
-        uid = force_str(urlsafe_base64_decode(uid))
-        user = User.objects.get(pk=uid)
-
-        if user is not None and account_activation_token.check_token(user, token):
-            user.password = form.clean_password()
-            user.save()
-        return super().form_valid(form)
 
 
 class CreatePostView(LoginRequiredMixin, FormView):
@@ -234,3 +202,32 @@ class ChangePasswordPage(LoginRequiredMixin, View):
             user = authenticate(username=username, password=password)
             login(request, user)
         return redirect('profile', user.pk)
+
+
+class ForgotPasswordView(FormView):
+    template_name = 'apps/auth/forgot_password.html'
+    form_class = ForgotPasswordForm
+    success_url = reverse_lazy('login')
+
+    def form_valid(self, form):
+        current_site = get_current_site(self.request)
+        send_to_gmail.apply_async(args=[form.data.get('email'), current_site.domain, 'reset'])
+        return super().form_valid(form)
+
+
+class ResetPasswordView(TemplateView):
+    template_name = 'apps/auth/reset_password.html'
+    def post(self, request, *args, **kwargs):
+        uid = kwargs.get('uid')
+        token = kwargs.get('token')
+        try:
+            uid = force_str(urlsafe_base64_decode(uid))
+            user = User.objects.get(pk=uid)
+        except Exception as e:
+            user = None
+        if user and account_activation_token.check_token(user, token):
+            form = ResetPasswordForm(request.POST)
+            if form.is_valid():
+                form.save()
+        else:
+            return HttpResponse('Link not found')

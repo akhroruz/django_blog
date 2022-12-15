@@ -1,9 +1,10 @@
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.hashers import make_password
 from django.core.exceptions import ValidationError
-from django.db.transaction import atomic
 from django.forms import ModelForm, CharField, PasswordInput, ModelMultipleChoiceField, CheckboxSelectMultiple, Form, \
     EmailField
+from django.utils.encoding import force_str
+from django.utils.http import urlsafe_base64_decode
 
 from apps.models import Comment, User, Post, Category, Message
 
@@ -65,15 +66,17 @@ class ForgotPasswordForm(Form):
         fields = ('email',)
 
 
-class ResetPasswordForm(Form):
-    confirm_password = CharField(widget=PasswordInput(attrs={"autocomplete": "current-password"}))
+
+class ResetPasswordForm(ModelForm):
+    password = CharField(max_length=255)
+    confirm_password = CharField(max_length=255)
 
     def clean_password(self):
         password = self.data.get('password')
         confirm_password = self.data.get('confirm_password')
-        if confirm_password != password:
-            raise ValidationError('Parolni tekshiring!')
-        return make_password(password)
+        if password != confirm_password:
+            raise ValidationError('Parol xato!')
+        return password
 
     class Meta:
         model = User
