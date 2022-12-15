@@ -10,6 +10,10 @@
 <script type="text/javascript" src="{% static "ckeditor/ckeditor/ckeditor.js" %}"></script>
 <script src="https://cdn.ckeditor.com/4.16.1/standard/ckeditor.js"></script>
 <script src="{% static 'apps/js/jquery.maskedinput.min.js' %}"></script>
+
+
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.min.js"></script>
 {#<script src="{% static 'apps/js/inputmask.js' %}"></script>#}
 
 <script>
@@ -28,4 +32,50 @@
     CKEDITOR.replace('editor1', {
         width: "100%",
     });
+
+
+    const user_input = $("#user-input")
+    const search_icon = $('#search-icon')
+    const results = $('#replaceable-content')
+    const endpoint = '/search'
+    const delay_by_in_ms = 700
+    let scheduled_function = false
+    let csrf_token = "321";
+    let ajax_call = function (endpoint, request_parameters) {
+        $.post(endpoint, request_parameters)
+            .done(response => {
+                let posts = response['posts']
+                console.log(posts)
+                if (posts) {
+                    let html_content = ``
+                    for (i in posts) {
+                        html_content += `<a class="list-group-item" href="${posts[i]['url']}">
+                                            <img src="{{ request.build_absolute_uri }}/media/${posts[i]['pic']}" alt="Post Image">
+                                        ${posts[i]['title']}</a>`
+                    }
+                    results.html(html_content)
+                }
+            })
+    }
+
+    user_input.on('keyup', function () {
+        let key_val = $(this).val()
+        const request_parameters = {
+            like: key_val, // value of user_input: the HTML element with ID user-input
+            csrfmiddlewaretoken: csrf_token
+        }
+        console.log(request_parameters)
+        // start animating the search icon with the CSS class
+        // if scheduled_function is NOT false, cancel the execution of the function
+        if (key_val === '') {
+            results.addClass('d-none')
+        } else {
+            if (scheduled_function) {
+                clearTimeout(scheduled_function)
+            }
+            results.removeClass('d-none')
+            // setTimeout returns the ID of the function to be executed
+            scheduled_function = setTimeout(ajax_call, delay_by_in_ms, endpoint, request_parameters)
+        }
+    })
 </script>

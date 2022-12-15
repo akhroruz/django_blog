@@ -4,10 +4,12 @@
 <header class="theme-default">
     <div id="search-box">
         <div class="container">
-            <form action="/" method="POST">
-                <input type="text" placeholder="Searching for news" name="search"/>
+            <form action="#" method="POST">
+                {% csrf_token %}
+                <input type="text" id="user-input" placeholder="Searching for news" name="like"/>
                 <button><i class="fas fa-arrow-right"></i></button>
             </form>
+            <ul class="list-group d-none style-2" id="replaceable-content" style="border: none"></ul>
         </div>
     </div>
     <div class="container">
@@ -65,7 +67,7 @@
                 <a href="{% url 'create-post' %}" class="btn btn-outline-primary"><i style="font-size:12px" class="fa">&#xf067;
                     Create post</i></a>
                 <a class="btn btn-outline-primary" href="{% url 'logout' %}">Log out</a>
-                <a class="btn btn-outline-primary" href="{% url 'profile' user.pk %}">Profile</a>
+                <a class="btn btn-outline-primary" href="{% url 'profile' %}">Profile</a>
             {% endif %}
         </div>
     </div>

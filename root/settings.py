@@ -117,7 +117,7 @@ MEDIA_ROOT = os.path.join(BASE_DIR / 'media/')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-LOGIN_URL = 'login/'
+LOGIN_URL = '/login'
 
 SITE_ID = 1
 SOCIALACCOUNT_PROVIDERS = {
@@ -143,6 +143,8 @@ SOCIALACCOUNT_PROVIDERS = {
 }
 
 LOGIN_REDIRECT_URL = '/'
+
+PASSWORD_RESET_TIMEOUT = 15
 
 SOCIALACCOUNT_QUERY_EMAIL = True
 ACCOUNT_LOGOUT_ON_GET = True
@@ -229,5 +231,5 @@ CELERY_TASK_SERIALIZER = 'json'
 CELERY_BROKER_URL = 'redis://localhost:6379'
 
 CRONJOBS = [
-    ('*/1 * * * *', 'apps.utils.cron.my_scheduled_job'),
+    ('0 0 * * *', 'apps.utils.cron.cron_job'),
 ]

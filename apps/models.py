@@ -129,6 +129,7 @@ class Post(Model):
         return self.title
 
     class Meta:
+        ordering = ['-created_at']
         verbose_name_plural = 'Postlar'
 
 

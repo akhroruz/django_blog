@@ -1,22 +1,32 @@
 from django.contrib import messages
 from django.contrib.auth import login, authenticate
+from django.contrib.auth.forms import SetPasswordForm
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView
 from django.contrib.sites.shortcuts import get_current_site
-from django.http import HttpResponse
-from django.shortcuts import redirect, get_object_or_404, render
+from django.http import HttpResponse, JsonResponse, HttpResponseRedirect
+from django.shortcuts import redirect, get_object_or_404
 from django.urls import reverse_lazy
-from django.utils.encoding import force_str, force_bytes
-from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
+from django.utils.encoding import force_str
+from django.utils.http import urlsafe_base64_decode
 from django.views import View
 from django.views.generic import ListView, DetailView, FormView, TemplateView, UpdateView
 
 from apps.forms import CreateCommentForm, CustomLoginForm, CreatePostForm, RegisterForm, ForgotPasswordForm, \
-    MessageForm, ResetPasswordForm, ProfileForm, ChangePasswordForm
+    MessageForm, ProfileForm, ChangePasswordForm
 from apps.models import Category, Post, SiteInfo, Comment, PostView, User
 from apps.utils.make_pdf import render_to_pdf
 from apps.utils.tasks import send_to_gmail
 from apps.utils.token import account_activation_token
+
+
+class SearchView(View):
+    def post(self, request, *args, **kwargs):
+        like = request.POST.get('like')
+        data = {
+            'posts': list(Post.objects.filter(title__icontains=like).values('title', 'pic', 'slug'))
+        }
+        return JsonResponse(data)
 
 
 class IndexView(ListView):
@@ -26,7 +36,7 @@ class IndexView(ListView):
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(object_list=object_list, **kwargs)
-        context['posts'] = Post.active.order_by('-created_at')[:4]
+        context['posts'] = Post.active.all()[:4]
         return context
 
 
@@ -43,7 +53,7 @@ class GeneratePdf(DetailView):
 
 
 class PostListView(ListView):
-    queryset = Post.active.order_by('-created_at')
+    queryset = Post.active.all()
     template_name = 'apps/blog-category.html'
     paginate_by = 4
     context_object_name = 'posts'
@@ -87,7 +97,7 @@ class DetailFormPostView(FormView, DetailView):
     form_class = CreateCommentForm
 
     def get_queryset(self):
-        PostView.objects.create(post_id=Post.objects.filter(slug=self.kwargs.get('slug')).first().pk)
+        PostView.objects.create(post=Post.objects.filter(slug=self.kwargs.get('slug')).first())
         return super().get_queryset()
 
     def get_context_data(self, **kwargs):
@@ -116,8 +126,11 @@ class CustomLoginView(LoginView):
     fields = '__all__'
     redirect_authenticated_user = True
 
-    def get_success_url(self):
-        return reverse_lazy('index')
+    def post(self, request, *args, **kwargs):
+        res = super().post(request, *args, **kwargs)
+        if url := self.request.POST.get('url'):
+            return HttpResponseRedirect(url)
+        return res
 
 
 class RegisterView(FormView):
@@ -181,11 +194,19 @@ class CreatePostView(LoginRequiredMixin, FormView):
 
 class ProfileView(LoginRequiredMixin, UpdateView):
     template_name = 'apps/auth/profile.html'
-    slug_url_kwarg = 'pk'
     queryset = User.objects.all()
-    success_url = reverse_lazy('index')
+    success_url = reverse_lazy('profile')
     form_class = ProfileForm
 
+    def get_object(self, queryset=None):
+        return self.request.user
+
+    def get(self, request, **kwargs):
+        if self.request.user.is_anonymous:
+            return redirect('login')
+        self.object = self.request.user
+        context = self.get_context_data(object=self.object, form=self.form_class)
+        return self.render_to_response(context)
     def form_valid(self, form):
         form.save()
         return super().form_valid(form)
@@ -217,17 +238,26 @@ class ForgotPasswordView(FormView):
 
 class ResetPasswordView(TemplateView):
     template_name = 'apps/auth/reset_password.html'
-    def post(self, request, *args, **kwargs):
-        uid = kwargs.get('uid')
-        token = kwargs.get('token')
+
+    def get_user(self, uid, token):
         try:
             uid = force_str(urlsafe_base64_decode(uid))
             user = User.objects.get(pk=uid)
         except Exception as e:
             user = None
-        if user and account_activation_token.check_token(user, token):
-            form = ResetPasswordForm(request.POST)
+        return user, user and account_activation_token.check_token(user, token)
+
+    def get(self, request, *args, **kwargs):
+        user, is_valid = self.get_user(**kwargs)
+        if not is_valid:
+            return HttpResponse('Link not found')
+        return super().get(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        user, is_valid = self.get_user(**kwargs)
+        if is_valid:
+            form = SetPasswordForm(user, request.POST)
             if form.is_valid():
                 form.save()
-        else:
-            return HttpResponse('Link not found')
+                return redirect('login')
+        return HttpResponse('Link not found')
