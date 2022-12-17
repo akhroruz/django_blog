@@ -105,30 +105,37 @@
                                     <div class="post-footer__related">
                                         <div class="post-footer__related__item -prev">
                                             <div class="post-footer__related__item__content">
-                                                <img src="{% static 'apps/assets/images/posts/webdesign.jpg' %}"
-                                                     alt="Relate news image"/>
-                                                <div class="post-card ">
-                                                    <div></div>
-                                                    <div class="card__content">
-                                                        <h5 class="card__content-category">Open Source</h5>
-                                                        <a class="card__content-title" href="#">Best design resources
-                                                            websites every developer should bookmark</a>
+                                                {% if post.get_previous_by_created_at %}
+
+                                                    <img src="{{ post.get_previous_by_created_at.pic.url }}"
+                                                         alt="Relate news image"/>
+                                                    <div class="post-card ">
+                                                        <div></div>
+                                                        <div class="card__content">
+                                                            <h5 class="card__content-category">{{ post.get_previous_by_created_at.category.first.name }}</h5>
+                                                            <a class="card__content-title"
+                                                               href="{% url 'post_form_detail' post.get_previous_by_created_at.slug %}">{{ post.get_previous_by_created_at.title }}</a>
+                                                        </div>
                                                     </div>
-                                                </div>
+                                                {% endif %}
+
                                             </div>
                                         </div>
                                         <div class="post-footer__related__item -next">
                                             <div class="post-footer__related__item__content">
-                                                <div class="post-card -right">
-                                                    <div></div>
-                                                    <div class="card__content">
-                                                        <h5 class="card__content-category">Open Source</h5>
-                                                        <a class="card__content-title" href="#">Best Open Source Tools
-                                                            For Developers</a>
+                                                {% if post.get_next_by_created_at %}
+                                                    <div class="post-card -right">
+                                                        <div></div>
+                                                        <div class="card__content">
+                                                            <h5 class="card__content-category">{{ post.get_next_by_created_at.category.first.name }}</h5>
+                                                            <a class="card__content-title"
+                                                               href="{% url 'post_form_detail' post.get_next_by_created_at.slug %}">{{ post.get_next_by_created_at.title }}</a>
+                                                        </div>
                                                     </div>
-                                                </div>
-                                                <img src="{% static 'apps/assets/images/posts/opensource.jpg' %}"
-                                                     alt="Relate news image"/>
+                                                    <img src="{{ post.get_next_by_created_at.pic.url }}"
+                                                         alt="Relate news image"/>
+                                                {% endif %}
+
                                             </div>
                                         </div>
                                     </div>
@@ -181,5 +188,4 @@
             </div>
         </div>
     </div>
-
 {% endblock %}

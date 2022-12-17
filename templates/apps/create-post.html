@@ -6,13 +6,13 @@
             <div class="breadcrumb">
                 <ul>
                     <li><a href="{% url 'index' %}"><i class="fas fa-home"></i>Home</a></li>
-                    <li class="active"><a href="{% url 'create-post' %}">Create Post</a></li>
+                    <li class="active"><a href="{% url 'create_post' %}">Create Post</a></li>
                 </ul>
             </div>
             <div class="create-post">
                 <div class="row">
                     <div class="container px-4 mt-4">
-                        <form method="post" action="{% url 'create-post' %}" enctype="multipart/form-data"
+                        <form method="post" action="{% url 'create_post' %}" enctype="multipart/form-data"
                               class="needs-validation"
                               novalidate>
 

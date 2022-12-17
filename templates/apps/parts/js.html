@@ -49,8 +49,8 @@
                 if (posts) {
                     let html_content = ``
                     for (i in posts) {
-                        html_content += `<a class="list-group-item" href="${posts[i]['url']}">
-                                            <img src="{{ request.build_absolute_uri }}/media/${posts[i]['pic']}" alt="Post Image">
+                        html_content += `<a class="list-group-item" href="post/${posts[i]['slug']}">
+                                            <img src="{{ request.build_absolute_uri }}/media/${posts[i]['pic']}" with="50" height="50" alt="Post Image">
                                         ${posts[i]['title']}</a>`
                     }
                     results.html(html_content)
