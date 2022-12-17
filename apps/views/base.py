@@ -1,3 +1,4 @@
+from django.contrib.sites.shortcuts import get_current_site
 from django.http import JsonResponse, HttpResponse
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
@@ -13,7 +14,8 @@ class SearchView(View):
     def post(self, request, *args, **kwargs):
         like = request.POST.get('like')
         data = {
-            'posts': list(Post.objects.filter(title__icontains=like).values('title', 'pic', 'slug'))
+            'posts': list(Post.objects.filter(title__icontains=like).values('title', 'pic', 'slug')),
+            'domain': get_current_site(request)
         }
         return JsonResponse(data)
 
@@ -91,8 +93,9 @@ class DetailFormPostView(FormView, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['comments'] = Comment.objects.filter(post__slug=self.kwargs.get('slug'))
-        context['views'] = PostView.objects.filter(post__slug=self.kwargs.get('slug')).count()
+        slug = self.kwargs.get('slug')
+        context['comments'] = Comment.objects.filter(post__slug=slug)
+        context['views'] = PostView.objects.filter(post__slug=slug).count()
         return context
 
     def post(self, request, *args, **kwargs):
@@ -107,4 +110,3 @@ class DetailFormPostView(FormView, DetailView):
         if form.is_valid():
             form.save()
         return redirect('post_form_detail', slug)
-
