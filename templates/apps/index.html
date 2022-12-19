@@ -103,7 +103,7 @@
                                                             <div class="post-card -small">
                                                                 <a class="card__cover"
                                                                    href="{% url 'post_form_detail' post.slug %}">
-                                                                    <img src="{{ post.pic.url }}"
+                                                                    <img width="500" height="600" src="{{ post.pic.url }}"
                                                                          alt="{{ posts.first.content|safe|striptags|truncatechars:100 }}"/>
                                                                 </a>
                                                                 <div class="card__content">

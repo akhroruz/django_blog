@@ -89,7 +89,6 @@ class Post(Model):
     status = CharField(max_length=25, choices=Status.choices, default=Status.PENDING)
     author = ForeignKey(User, SET_NULL, null=True, blank=True)
     pic = ResizedImageField(upload_to='posts/')
-    view = IntegerField(default=0)
     category = ManyToManyField(Category)
     created_at = DateTimeField(auto_now=True)
 
@@ -161,6 +160,21 @@ class Message(Model):
     class Meta:
         verbose_name = 'Xabar'
         verbose_name_plural = 'Xabarlar'
+
+    def __str__(self):
+        return self.name
+
+
+class Region(Model):
+    name = CharField(max_length=255)
+
+    def __str__(self):
+        return self.name
+
+
+class District(Model):
+    name = CharField(max_length=255)
+    region = ForeignKey(Region, CASCADE)
 
     def __str__(self):
         return self.name

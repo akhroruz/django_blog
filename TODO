@@ -8,13 +8,13 @@
 6) post detailda yana 1ta button (pdf ga otkazish) ✅
 7) githubga qoyish ✅
 8) phone numberni chiroyli chiqarish ✅
+9) register ✅
+10) reset password (login page parolni unutib qoldirdim) ✅
+11) change password (profile page da) ✅
+12) cron bilan cancel bolgan postlarni 7kundan keyin delete qilsin ✅
+13) confirm email (one time link) ✅
+14) django command qoshish (region va districtlarni database qoshish) ✅
+15) user o'zini qo'shgan postlarini ko'rishi. ✅
 
-9) cron bilan cancel bolgan postlarni 7kundan keyin delete qilsin ✅
-
-1. register ✅
-2. reset password (login page parolni unutib qoldirdim) ✅
-3. change password (profile page da) ✅
-
-4. confirm email (one time link) ✅
-5. sms yuborish (profile pageda tasdiqlash buttoni boladi)
-6. google, telegram
+16) sms yuborish (profile pageda tasdiqlash buttoni boladi)
+17) google, telegram

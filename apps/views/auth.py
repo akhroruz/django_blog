@@ -1,8 +1,8 @@
-from allauth.account.views import LoginView
 from django.contrib import messages
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.forms import SetPasswordForm
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.views import LoginView
 from django.contrib.sites.shortcuts import get_current_site
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import redirect
@@ -12,8 +12,8 @@ from django.utils.http import urlsafe_base64_decode
 from django.views import View
 from django.views.generic import TemplateView, UpdateView, FormView
 
-from apps.forms import ProfileForm, ChangePasswordForm, ForgotPasswordForm, CustomLoginForm, RegisterForm, \
-    CreatePostForm
+from apps.forms import ProfileForm, ChangePasswordForm, ForgotPasswordForm, RegisterForm, \
+    CreatePostForm, CustomLoginForm
 from apps.models import User
 from apps.utils.tasks import send_to_gmail
 from apps.utils.token import account_activation_token
@@ -24,12 +24,13 @@ class CustomLoginView(LoginView):
     template_name = 'apps/auth/login.html'
     fields = '__all__'
     redirect_authenticated_user = True
+    next_page = reverse_lazy('index')
 
     def post(self, request, *args, **kwargs):
-        res = super().post(request, *args, **kwargs)
+        result = super().post(request, *args, **kwargs)
         if url := self.request.POST.get('url'):
             return HttpResponseRedirect(url)
-        return res
+        return result
 
 
 class RegisterView(FormView):
@@ -161,3 +162,16 @@ class ResetPasswordView(TemplateView):
                 form.save()
                 return redirect('login')
         return HttpResponse('Link not found')
+
+
+# class TwilioView(View):
+#     def get(self, request, *args, **kwargs):
+#         message_to_broadcast = (
+#             "Have you played the incredible TwilioQuest yet? Grab it here: https://www.twilio.com/quest")
+#         client = Client(settings.TWILIO_ACCOUNT_SID, settings.TWILIO_AUTH_TOKEN)
+#         for recipient in settings.SMS_BROADCAST_TO_NUMBERS:
+#             if recipient:
+#                 client.messages.create(to=recipient,
+#                                        from_=settings.TWILIO_NUMBER,
+#                                        body=message_to_broadcast)
+#         return HttpResponse("messages sent!", 200)

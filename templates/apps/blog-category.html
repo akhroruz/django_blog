@@ -79,7 +79,7 @@
                                     <div class="post-card -small -horizontal">
                                         <a class="card__cover" href="{% url 'post_form_detail' post.slug %}"
                                            tabindex="0">
-                                            <img src="{{ post.pic.url }}" alt="">
+                                            <img width="500" height="600" src="{{ post.pic.url }}" alt="">
                                         </a>
                                         <div class="card__content">
                                             {% if post.category.exists %}
@@ -114,7 +114,7 @@
                                     {% else %}
                                         <li class="disabled"><span>&laquo;</span></li>
                                     {% endif %}
-                                    {% for i in page_obj.paginator.page_range %}
+                                    {% for i in pagination_range %}
                                         {% if page_obj.number == i %}
                                             <li class="active"><span>{{ i }} <span
                                                     class="sr-only">(current)</span></span></li>

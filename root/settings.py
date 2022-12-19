@@ -26,17 +26,11 @@ INSTALLED_APPS = [
 
     'apps',
 
+    'django_twilio',
     'ckeditor',
     'ckeditor_uploader',
     'fontawesomefree',
     'django_crontab',
-
-    'allauth',
-    'allauth.account',
-    'allauth.socialaccount',
-    'allauth.socialaccount.providers.telegram',
-    'allauth.socialaccount.providers.google',
-    'allauth.socialaccount.providers.github',
 ]
 
 MIDDLEWARE = [
@@ -119,40 +113,10 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 LOGIN_URL = '/login'
 
-SITE_ID = 1
-SOCIALACCOUNT_PROVIDERS = {
-    'google': {
-        'SCOPE': [
-            'profile',
-            'email',
-        ],
-        'AUTH_PARAMS': {
-            'access_type': 'online',
-        }
-    },
-    'telegram': {
-        'TOKEN': '5861999459:AAGEC9nUNy6UD--8WTyrBzNpD0DV6g3EqW0'
-    },
-    'github': {
-        'SCOPE': [
-            'user',
-            'repo',
-            'read:org',
-        ],
-    }
-}
-
 LOGIN_REDIRECT_URL = '/'
+SITE_ID = 1
 
-SOCIALACCOUNT_QUERY_EMAIL = True
-ACCOUNT_LOGOUT_ON_GET = True
-ACCOUNT_UNIQUE_EMAIL = True
-ACCOUNT_EMAIL_REQUIRED = True
-
-AUTHENTICATION_BACKENDS = [
-    'django.contrib.auth.backends.ModelBackend',
-    'allauth.account.auth_backends.AuthenticationBackend',
-]
+AUTHENTICATION_BACKENDS = ('django.contrib.auth.backends.ModelBackend',)
 
 CKEDITOR_UPLOAD_PATH = 'posts/'
 
@@ -237,3 +201,12 @@ ESKIZ_SECRET_KEY = env('ESKIZ_SECRET_KEY')
 ESKIZ_AUTH_URL = env('ESKIZ_AUTH_URL')
 ESKIZ_TOKEN = env('ESKIZ_TOKEN')
 ESKIZ_SEND_URL = env('ESKIZ_SEND_URL')
+
+TWILIO_ACCOUNT_SID = 'AC50144c20fd3e71d20fd307cc0a7fee17'
+TWILIO_AUTH_TOKEN = '42e6648612f97243c445572839fd6771'
+DJANGO_TWILIO_BLACKLIST_CHECK = True
+TWILIO_NUMBER = '+998934923327'
+
+SMS_BROADCAST_TO_NUMBERS = [
+    "+998993994074",  # use the format +19735551234
+]

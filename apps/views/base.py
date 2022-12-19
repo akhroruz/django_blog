@@ -51,14 +51,23 @@ class PostListView(ListView):
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(object_list=object_list, **kwargs)
-        slug = self.request.GET.get('category')
-        qs = self.get_queryset()
-        context['posts'] = qs
-        context['category'] = Category.objects.filter(slug=slug).first()
+
+        pagination = context['page_obj']
+        paginator = pagination.paginator
+        page = pagination.number
+        left = int(page) - 4
+        if left < 1:
+            left = 1
+        right = int(page) + 5
+        if right > paginator.num_pages:
+            right = paginator.num_pages + 1
+        context['pagination_range'] = range(left, right)
         return context
 
     def get_queryset(self, *args, **kwargs):
         qs = super().get_queryset()
+        if self.request.path.split('/')[-1] == 'my-posts':
+            return qs.filter(author=self.request.user.pk)
         if category := self.request.GET.get('category'):
             return qs.filter(category__slug=category)
         return qs

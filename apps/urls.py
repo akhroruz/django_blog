@@ -1,6 +1,7 @@
 from django.contrib.auth.views import LogoutView
 from django.urls import path
 from django.views.decorators.csrf import csrf_exempt
+from django.views.generic import TemplateView
 
 from apps.views import IndexView, AboutView, ContactView, PostListView, CustomLoginView, RegisterView, \
     DetailFormPostView, CreatePostView, ChangePasswordPage, GeneratePdf, ActivateEmailView, ProfileView, \
@@ -8,7 +9,8 @@ from apps.views import IndexView, AboutView, ContactView, PostListView, CustomLo
 
 urlpatterns = (
     path('', IndexView.as_view(), name='index'),
-    path('login/', CustomLoginView.as_view(), name='login'),
+    path('my-posts', PostListView.as_view(), name='mypost'),
+    path('login', CustomLoginView.as_view(), name='login'),
     path('register/', RegisterView.as_view(), name='register'),
     path('activate/<str:uid>/<str:token>', ActivateEmailView.as_view(), name='confirm_mail'),
     path('logout', LogoutView.as_view(next_page='index'), name='logout'),
