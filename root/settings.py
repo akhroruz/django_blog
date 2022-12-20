@@ -23,6 +23,10 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.sites',
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.google',
 
     'apps',
 
@@ -116,7 +120,26 @@ LOGIN_URL = '/login'
 LOGIN_REDIRECT_URL = '/'
 SITE_ID = 1
 
-AUTHENTICATION_BACKENDS = ('django.contrib.auth.backends.ModelBackend',)
+AUTHENTICATION_BACKENDS = (
+    'django.contrib.auth.backends.ModelBackend', 'allauth.account.auth_backends.AuthenticationBackend'
+)
+
+SOCIALACCOUNT_QUERY_EMAIL = True
+ACCOUNT_LOGOUT_ON_GET = True
+ACCOUNT_UNIQUE_EMAIL = True
+ACCOUNT_EMAIL_REQUIRED = True
+
+SOCIALACCOUNT_PROVIDERS = {
+    'google': {
+        'SCOPE': [
+            'profile',
+            'email',
+        ],
+        'AUTH_PARAMS': {
+            'access_type': 'online',
+        }
+    }
+}
 
 CKEDITOR_UPLOAD_PATH = 'posts/'
 

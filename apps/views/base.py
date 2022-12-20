@@ -1,6 +1,6 @@
 from django.contrib.sites.shortcuts import get_current_site
 from django.http import JsonResponse, HttpResponse
-from django.shortcuts import get_object_or_404, redirect
+from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy
 from django.views import View
 from django.views.generic import ListView, DetailView, FormView
@@ -119,3 +119,8 @@ class DetailFormPostView(FormView, DetailView):
         if form.is_valid():
             form.save()
         return redirect('post_form_detail', slug)
+
+
+def page_not_found(request, exception):
+    response = render(request, '404.html', status=404)
+    return response

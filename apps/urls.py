@@ -1,7 +1,6 @@
 from django.contrib.auth.views import LogoutView
 from django.urls import path
 from django.views.decorators.csrf import csrf_exempt
-from django.views.generic import TemplateView
 
 from apps.views import IndexView, AboutView, ContactView, PostListView, CustomLoginView, RegisterView, \
     DetailFormPostView, CreatePostView, ChangePasswordPage, GeneratePdf, ActivateEmailView, ProfileView, \

@@ -163,7 +163,6 @@ class ResetPasswordView(TemplateView):
                 return redirect('login')
         return HttpResponse('Link not found')
 
-
 # class TwilioView(View):
 #     def get(self, request, *args, **kwargs):
 #         message_to_broadcast = (
