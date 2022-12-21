@@ -1,13 +1,11 @@
 from django.contrib.admin import ModelAdmin, register
-from django.core.mail import send_mail
 from django.http import HttpResponseRedirect
 from django.shortcuts import redirect
 from django.urls import reverse, path
 from django.utils.html import format_html
 
-from apps.models import Category, Post, SiteInfo, Message, User
+from apps.models import Category, Post, SiteInfo, Message
 from apps.utils.tasks import send_message_to_gmail
-from root.settings import EMAIL_HOST_USER
 
 
 @register(Category)

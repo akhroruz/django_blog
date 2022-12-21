@@ -1,3 +1,6 @@
+import os
+
+import qrcode
 from django.contrib.sites.shortcuts import get_current_site
 from django.http import JsonResponse, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
@@ -36,10 +39,18 @@ class GeneratePdf(DetailView):
 
     def get(self, request, *args, **kwargs):
         post = Post.objects.get(pk=kwargs.get('pk'))
+        url = f'{get_current_site(request)}/post/{post.slug}'
+
+        img = qrcode.make(url)
+        img.save(post.slug + '.png')
+
         data = {
             'post': post,
+            'qrcode': f'{os.getcwd()}/{post.slug}.png'
         }
+        print(os.getcwd())
         pdf = render_to_pdf('make_pdf.html', data)
+        os.remove(f'{post.slug}.png')
         return HttpResponse(pdf, content_type='application/pdf')
 
 

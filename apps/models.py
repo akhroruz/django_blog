@@ -1,12 +1,13 @@
 from ckeditor_uploader.fields import RichTextUploadingField
 from django.contrib.auth.models import AbstractUser
 from django.contrib.postgres.fields import ArrayField
-from django.core.validators import RegexValidator
 from django.db.models import Model, CharField, ImageField, SlugField, ForeignKey, CASCADE, DateTimeField, \
-    ManyToManyField, SET_NULL, TextField, EmailField, TextChoices, BooleanField, IntegerField, PROTECT, Manager
+    ManyToManyField, SET_NULL, TextField, EmailField, TextChoices, BooleanField, PROTECT, Manager
 from django.utils.html import format_html
 from django.utils.text import slugify
 from django_resized import ResizedImageField
+
+from apps.managers import UserManager
 
 
 class SiteInfo(Model):
@@ -14,7 +15,6 @@ class SiteInfo(Model):
     about = TextField()
     location = CharField(max_length=255)
     email = EmailField(max_length=255)
-    # phone_regex = RegexValidator(regex=r'^\+?1?\d{9,15}$')
     phone = CharField(max_length=20, blank=True)
     social = ArrayField(CharField(max_length=255))
 
@@ -27,12 +27,12 @@ class SiteInfo(Model):
 
 
 class User(AbstractUser):
-    # phone_regex = RegexValidator(regex=r'^\+?1?\d{9,15}$')
     phone = CharField(max_length=20, blank=True)
     bio = TextField(null=True, blank=True)
     email = EmailField(max_length=255, unique=True, blank=True)
-    is_active = BooleanField(default=False)
     image = ImageField(upload_to='profile/', default='media/profile/default.jpg')
+
+    objects = UserManager
 
     class Meta:
         verbose_name_plural = 'Userlar'

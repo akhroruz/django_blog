@@ -1,7 +1,5 @@
 import csv
-
 from django.core.management.base import BaseCommand
-
 from apps.models import Region, District
 
 

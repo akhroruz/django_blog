@@ -12,8 +12,9 @@
 11) change password (profile page da) ✅
 12) cron bilan cancel bolgan postlarni 7kundan keyin delete qilsin ✅
 13) confirm email (one time link) ✅
-14) django command qoshish (region va districtlarni database qoshish) ✅
+14) django command (region, district) ✅
 15) user o'zini qo'shgan postlarini ko'rishi. ✅
+16) qr code ✅
 
 16) sms yuborish (profile pageda tasdiqlash buttoni boladi)
-17) google, telegram
+17) google, telegram (github or gitlab)

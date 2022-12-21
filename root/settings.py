@@ -1,6 +1,9 @@
 import os.path
 from pathlib import Path
+
 import environ
+import sentry_sdk
+from sentry_sdk.integrations.django import DjangoIntegration
 
 env = environ.Env(
     DEBUG=(bool, False)
@@ -27,6 +30,7 @@ INSTALLED_APPS = [
     'allauth.account',
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
+    'allauth.socialaccount.providers.github',
 
     'apps',
 
@@ -138,6 +142,13 @@ SOCIALACCOUNT_PROVIDERS = {
         'AUTH_PARAMS': {
             'access_type': 'online',
         }
+    },
+    'github': {
+        'SCOPE': [
+            'user',
+            'repo',
+            'read:org',
+        ],
     }
 }
 
@@ -231,5 +242,14 @@ DJANGO_TWILIO_BLACKLIST_CHECK = True
 TWILIO_NUMBER = '+998934923327'
 
 SMS_BROADCAST_TO_NUMBERS = [
-    "+998993994074",  # use the format +19735551234
+    "+998993994074",
 ]
+
+sentry_sdk.init(
+    dsn="https://eb8a781659ea463b949fb7d02a0b819f@o4504360893808640.ingest.sentry.io/4504360897413120",
+    integrations=[
+        DjangoIntegration(),
+    ],
+    traces_sample_rate=1.0,
+    send_default_pii=True
+)

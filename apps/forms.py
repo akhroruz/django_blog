@@ -1,11 +1,8 @@
-from django.contrib.auth import authenticate
-from django.contrib.auth.forms import AuthenticationForm, SetPasswordForm
+from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.hashers import make_password
 from django.core.exceptions import ValidationError
 from django.forms import ModelForm, CharField, PasswordInput, ModelMultipleChoiceField, CheckboxSelectMultiple, Form, \
     EmailField
-from django.utils.encoding import force_str
-from django.utils.http import urlsafe_base64_decode
 
 from apps.models import Comment, User, Post, Category, Message
 
@@ -67,22 +64,20 @@ class ForgotPasswordForm(Form):
         fields = ('email',)
 
 
-# class ResetPasswordForm(SetPasswordForm):
-#     pass
-# class ResetPasswordForm(ModelForm):
-#     password = CharField(max_length=255)
-#     confirm_password = CharField(max_length=255)
-#
-#     def clean_password(self):
-#         password = self.data.get('password')
-#         confirm_password = self.data.get('confirm_password')
-#         if password != confirm_password:
-#             raise ValidationError('Parol xato!')
-#         return password
-#
-#     class Meta:
-#         model = User
-#         fields = ('password',)
+class ResetPasswordForm(ModelForm):
+    password = CharField(max_length=255)
+    confirm_password = CharField(max_length=255)
+
+    def clean_password(self):
+        password = self.data.get('password')
+        confirm_password = self.data.get('confirm_password')
+        if password != confirm_password:
+            raise ValidationError('Parol xato!')
+        return password
+
+    class Meta:
+        model = User
+        fields = ('password',)
 
 
 class MessageForm(ModelForm):

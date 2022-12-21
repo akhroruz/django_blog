@@ -1,14 +1,12 @@
-import csv
-
 from django.core.management.base import BaseCommand
+from faker import Faker
 from faker.utils.text import slugify
 
-from apps.models import Region, District, Post
-from faker import Faker
+from apps.models import Post
 
 
 class Command(BaseCommand):
-    help = 'Create blogs'
+    help = 'Create posts'
 
     def add_arguments(self, parser):
         parser.add_argument('total', type=int, help='Number of posts count.')
