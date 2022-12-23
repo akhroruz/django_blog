@@ -7,7 +7,7 @@ from django.utils.html import format_html
 from django.utils.text import slugify
 from django_resized import ResizedImageField
 
-from apps.managers import UserManager
+# from apps.managers import UserManager
 
 
 class SiteInfo(Model):
@@ -32,7 +32,7 @@ class User(AbstractUser):
     email = EmailField(max_length=255, unique=True, blank=True)
     image = ImageField(upload_to='profile/', default='media/profile/default.jpg')
 
-    objects = UserManager
+    # objects = UserManager
 
     class Meta:
         verbose_name_plural = 'Userlar'

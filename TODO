@@ -15,6 +15,7 @@
 14) django command (region, district) ✅
 15) user o'zini qo'shgan postlarini ko'rishi. ✅
 16) qr code ✅
+17) sentry ✅
 
 16) sms yuborish (profile pageda tasdiqlash buttoni boladi)
 17) google, telegram (github or gitlab)

@@ -42,13 +42,12 @@ class GeneratePdf(DetailView):
         url = f'{get_current_site(request)}/post/{post.slug}'
 
         img = qrcode.make(url)
-        img.save(post.slug + '.png')
+        img.save(f'{post.slug}.png')
 
         data = {
             'post': post,
             'qrcode': f'{os.getcwd()}/{post.slug}.png'
         }
-        print(os.getcwd())
         pdf = render_to_pdf('make_pdf.html', data)
         os.remove(f'{post.slug}.png')
         return HttpResponse(pdf, content_type='application/pdf')
