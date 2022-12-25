@@ -6,6 +6,7 @@ from root.settings import STATIC_URL, STATIC_ROOT, MEDIA_ROOT, MEDIA_URL
 
 urlpatterns = [
     path('', include('apps.urls')),
+    path('__debug__/', include('debug_toolbar.urls')),
     path('admin/', admin.site.urls),
     path('accounts/', include('allauth.urls')),
     path('ckeditor/', include('ckeditor_uploader.urls')),

@@ -1,4 +1,5 @@
 import os.path
+from logging import FileHandler
 from pathlib import Path
 
 import environ
@@ -33,7 +34,7 @@ INSTALLED_APPS = [
     'allauth.socialaccount.providers.github',
 
     'apps',
-
+    'debug_toolbar',
     'django_twilio',
     'ckeditor',
     'ckeditor_uploader',
@@ -42,6 +43,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    "debug_toolbar.middleware.DebugToolbarMiddleware",
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -109,7 +111,7 @@ TIME_ZONE = 'Asia/Tashkent'
 
 USE_I18N = True
 
-USE_TZ = True
+USE_TZ = False
 
 STATIC_URL = 'static/'
 STATIC_ROOT = os.path.join(BASE_DIR / 'static/')
@@ -245,6 +247,10 @@ SMS_BROADCAST_TO_NUMBERS = [
     "+998993994074",
 ]
 
+INTERNAL_IPS = [
+    "127.0.0.1",
+    "localhost",
+]
 sentry_sdk.init(
     dsn="https://eb8a781659ea463b949fb7d02a0b819f@o4504360893808640.ingest.sentry.io/4504360897413120",
     integrations=[
@@ -253,3 +259,59 @@ sentry_sdk.init(
     traces_sample_rate=1.0,
     send_default_pii=True
 )
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'console': {
+            'format': '%(name)-12s %(levelname)-8s %(message)s'
+        },
+        'file': {
+            'format': '%(asctime)s %(name)-12s %(levelname)-8s %(message)s'
+        }
+    },
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+            'formatter': 'file',
+        },
+        'file': {
+            'level': 'DEBUG',
+            'class': 'logging.handlers.TimedRotatingFileHandler',
+            'formatter': 'file',
+            'filename': 'debug.log',
+            'when': 'S',  # daily, you can use 'midnight' as well
+            'backupCount': 100,  # 100 days backup
+        },
+    },
+    # 'loggers': {
+    #     'django.db.backends': {
+    #         'level': 'DEBUG',
+    #         'handlers': ['console', 'file'],
+    #     }
+    # }
+}
+
+#
+# LOGGING = {
+#     'version': 1,
+#     'filters': {
+#         'require_debug_true': {
+#             '()': 'django.utils.log.RequireDebugTrue',
+#         }
+#     },
+#     'handlers': {
+#         'console': {
+#             'level': 'DEBUG',
+#             'filters': ['require_debug_true'],
+#             'class': 'logging.StreamHandler',
+#         }
+#     },
+#     'loggers': {
+#         'django.db.backends': {
+#             'level': 'DEBUG',
+#             'handlers': ['console'],
+#         }
+#     }
+# }

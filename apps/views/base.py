@@ -2,6 +2,7 @@ import os
 
 import qrcode
 from django.contrib.sites.shortcuts import get_current_site
+from django.db.models import Count
 from django.http import JsonResponse, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy
@@ -54,9 +55,10 @@ class GeneratePdf(DetailView):
 
 
 class PostListView(ListView):
+    # queryset = Post.active.aggregate(comment_count=Count('comment'))
     queryset = Post.active.all()
     template_name = 'apps/blog-category.html'
-    paginate_by = 4
+    paginate_by = 30
     context_object_name = 'posts'
 
     def get_context_data(self, *, object_list=None, **kwargs):
